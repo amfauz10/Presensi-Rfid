@@ -22,56 +22,76 @@ class SendWhatsAppNotification implements ShouldQueue
     protected $rfidCode;
     protected $namaSiswa;
     protected $status;
+    protected $siswaId;
+    protected $presensiId;
 
     /**
      * Create a new job instance.
+     *
+     * PERBAIKAN: Parameter $siswaId & $presensiId ditambahkan agar setiap
+     * baris log yang dibuat oleh job ini bisa disertai foreign key menuju
+     * tabel siswas DAN presensis, bukan hanya salinan nama & rfid_code tanpa
+     * relasi sama sekali.
      */
-    public function __construct($noHpOrangTua, $pesan, $rfidCode, $namaSiswa, $status)
+    public function __construct($noHpOrangTua, $pesan, $rfidCode, $namaSiswa, $status, $siswaId = null, $presensiId = null)
     {
         $this->noHpOrangTua = $noHpOrangTua;
         $this->pesan = $pesan;
         $this->rfidCode = $rfidCode;
         $this->namaSiswa = $namaSiswa;
         $this->status = $status;
+        $this->siswaId = $siswaId;
+        $this->presensiId = $presensiId;
     }
 
     /**
      * Execute the job.
      */
     public function handle(FonnteService $fonnte)
-    {
-        try {
-            // ==========================================
-            // PROTEKSI ANTI-SPAM LEVEL TINGGI (HUMAN-LIKE DELAY)
-            // ==========================================
-            // Membuat jeda tidur acak antara 4 sampai 8 detik sesaat sebelum mengirim pesan.
-            // Cara ini mengelabui sistem AI WhatsApp agar aktivitas kirim pesan terbaca 
-            // sebagai ketikan manual manusia, bukan tembakan bot massal yang kaku.
-            $jedaAcak = rand(4, 8);
+{
+    try {
+
+        if ($this->connection !== 'sync') {
+            $jedaAcak = rand(3, 6);
             sleep($jedaAcak);
-
-            // Mengirim pesan WhatsApp di background via Fonnte
-            $response = $fonnte->sendMessage($this->noHpOrangTua, $this->pesan);
-
-            // Mencatat log jika notifikasi berhasil dikirim
-            LogNotifikasi::create([
-                'rfid_code'         => $this->rfidCode,
-                'nama_siswa'        => $this->namaSiswa,
-                'no_hp_orang_tua'   => $this->noHpOrangTua,
-                'status_presensi'   => $this->status,
-                'status_notifikasi' => 'Berhasil',
-                'keterangan'        => json_encode($response),
-            ]);
-        } catch (\Exception $e) {
-            // Mencatat log jika notifikasi gagal dikirim
-            LogNotifikasi::create([
-                'rfid_code'         => $this->rfidCode,
-                'nama_siswa'        => $this->namaSiswa,
-                'no_hp_orang_tua'   => $this->noHpOrangTua,
-                'status_presensi'   => $this->status,
-                'status_notifikasi' => 'Gagal',
-                'keterangan'        => $e->getMessage(),
-            ]);
         }
+
+        
+        $response = $fonnte->sendMessage(
+            $this->noHpOrangTua,
+            $this->pesan
+        );
+
+        $berhasil = $response['success'] ?? false;
+
+        $keterangan = $berhasil
+            ? json_encode($response)
+            : ($response['body']['message'] ?? json_encode($response));
+
+        LogNotifikasi::create([
+            'rfid_code'         => $this->rfidCode,
+            'siswa_id'          => $this->siswaId,
+            'presensi_id'       => $this->presensiId,
+            'nama_siswa'        => $this->namaSiswa,
+            'no_hp_orang_tua'   => $this->noHpOrangTua,
+            'status_presensi'   => $this->status,
+            'status_notifikasi' => $berhasil ? 'Berhasil' : 'Gagal',
+            'keterangan'        => $keterangan,
+        ]);
+
+    } catch (\Exception $e) {
+
+        // Mencatat log jika notifikasi gagal dikirim
+        LogNotifikasi::create([
+            'rfid_code'         => $this->rfidCode,
+            'siswa_id'          => $this->siswaId,
+            'presensi_id'       => $this->presensiId,
+            'nama_siswa'        => $this->namaSiswa,
+            'no_hp_orang_tua'   => $this->noHpOrangTua,
+            'status_presensi'   => $this->status,
+            'status_notifikasi' => 'Gagal',
+            'keterangan'        => $e->getMessage(),
+        ]);
     }
+}
 }

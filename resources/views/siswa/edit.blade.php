@@ -164,8 +164,13 @@
                         </div>
 
                         <!-- Pilihan Kelas -->
+                        <!-- REVISI DOSEN (Poin 3): Rombel yang tampil otomatis dibatasi
+                             hanya seangkatan dengan kelas siswa saat ini (mis. siswa di
+                             3A hanya bisa dipindah ke 3A/3B), agar admin tidak salah
+                             klik pindah tingkat. Difilter langsung di PHP (SiswaController),
+                             tanpa JS, tanpa kolom/tabel baru. -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold mb-2">Penempatan Kelas</label>
+                            <label class="form-label fw-semibold mb-2">Rombel / Penempatan Kelas</label>
                             <div class="input-group search-merge-group">
                                 <span class="input-group-text"><i class="bi bi-layers text-muted"></i></span>
                                 <select name="kelas_id" class="form-select shadow-none" style="padding: 10px 12px;">
@@ -177,7 +182,59 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <span class="text-muted" style="font-size: 0.78rem;">
+                                Hanya menampilkan rombel seangkatan dengan kelas siswa saat ini.
+                            </span>
                         </div>
+
+                        <!-- REVISI DOSEN (Poin 1 & 2 - disederhanakan): Status Keaktifan Siswa -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold mb-2">Status Siswa</label>
+                            <div class="input-group search-merge-group">
+                                <span class="input-group-text"><i class="bi bi-person-check text-muted"></i></span>
+                                <select name="status" id="status-siswa" class="form-select shadow-none" style="padding: 10px 12px;">
+                                    <option value="Aktif" {{ $siswa->status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Tidak Aktif" {{ $siswa->status == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    @if($siswa->status == 'Alumni')
+                                        <option value="Alumni" selected>Alumni (Lulus)</option>
+                                    @endif
+                                </select>
+                            </div>
+                            <span class="text-muted" style="font-size: 0.78rem;">
+                                Status "Tidak Aktif" akan mengeluarkan siswa dari daftar aktif kelas, namun data & riwayat presensinya tetap tersimpan.
+                            </span>
+                        </div>
+
+                        <!-- REVISI: Alasan Tidak Aktif -- hanya tampil kalau status "Tidak Aktif" dipilih -->
+                        <div class="mb-3" id="wrapper-alasan-nonaktif" style="{{ $siswa->status == 'Tidak Aktif' ? '' : 'display:none;' }}">
+                            <label class="form-label fw-semibold mb-2">Alasan Tidak Aktif</label>
+                            <div class="input-group search-merge-group">
+                                <span class="input-group-text"><i class="bi bi-chat-left-text text-muted"></i></span>
+                                <select name="alasan_nonaktif" class="form-select shadow-none" style="padding: 10px 12px;">
+                                    <option value="">-- Pilih Alasan --</option>
+                                    @foreach(['Pindah Sekolah', 'Putus Sekolah', 'Meninggal Dunia'] as $alasan)
+                                        <option value="{{ $alasan }}" {{ $siswa->alasan_nonaktif == $alasan ? 'selected' : '' }}>{{ $alasan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <span class="text-muted" style="font-size: 0.78rem;">
+                                Alasan ini hanya untuk catatan administrasi internal, tidak ditampilkan mencolok di daftar siswa.
+                            </span>
+                        </div>
+
+                        @push('scripts')
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const statusSelect = document.getElementById('status-siswa');
+                            const wrapperAlasan = document.getElementById('wrapper-alasan-nonaktif');
+                            if (statusSelect && wrapperAlasan) {
+                                statusSelect.addEventListener('change', function () {
+                                    wrapperAlasan.style.display = (this.value === 'Tidak Aktif') ? '' : 'none';
+                                });
+                            }
+                        });
+                        </script>
+                        @endpush
                     </div>
 
                     <!-- KOLOM KANAN: CONFIG IOT & INTEGRATION -->
@@ -218,15 +275,12 @@
                                 <span class="input-group-text"><i class="bi bi-whatsapp text-muted"></i></span>
                                 <input type="text" name="no_hp_orang_tua" 
                                     value="{{ old('no_hp_orang_tua', $siswa->no_hp_orang_tua) }}"
-                                    placeholder="Contoh: 6281234567890"
+                                    placeholder="Contoh: 081234567890"
                                     class="form-control shadow-none @error('no_hp_orang_tua') is-invalid @enderror" style="padding: 10px 12px;">
                                 @error('no_hp_orang_tua')
                                     <div class="invalid-feedback px-2">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <span class="text-muted d-block mt-2" style="font-size: 0.75rem; line-height: 1.4;">
-                                Gunakan awalan kode negara <strong>628</strong> (tanpa karakter + atau spasi) untuk sinkronisasi pengiriman notifikasi otomatis.
-                            </span>
                         </div>
 
                         <!-- Bagian Edit dan Preview Foto Siswa -->
@@ -265,9 +319,9 @@
                     <div class="col-12">
                         <hr class="my-4" style="border-color: #f1f3f5;">
                         <div class="d-flex justify-content-end gap-2">
-                            {{-- LOGIC DILAKUKAN DISINI: Cek status data, jika alumni dilempar ke menu alumni, jika siswa reguler dikembalikan ke kelas asalnya --}}
-                            @if($siswa->status === 'Alumni')
-                                <a href="{{ route('alumni.index') }}"
+                            {{-- LOGIC: Alumni/Tidak Aktif diarahkan ke halaman Riwayat Siswa Nonaktif, siswa reguler kembali ke kelas asalnya --}}
+                            @if(in_array($siswa->status, ['Alumni', 'Tidak Aktif']))
+                                <a href="{{ route('alumni.index', ['status' => $siswa->status]) }}"
                                    class="btn btn-light border rounded-3 px-4 fw-semibold text-secondary shadow-none">
                                     Batal
                                 </a>

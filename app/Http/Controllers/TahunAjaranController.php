@@ -144,7 +144,7 @@ public function update(Request $request, $id)
         'tanggal_selesai'=>$request->tanggal_selesai,
     ]);
 
-    return back()->with('success','Data berhasil diubah.');
+    return back()->with('sukses','Data berhasil diubah.');
 }
 
 public function destroy($id)
@@ -165,6 +165,6 @@ public function destroy($id)
 
     $tahun->delete();
 
-    return back()->with('success','Data berhasil dihapus.');
+    return back()->with('sukses','Data berhasil dihapus.');
 }
 }

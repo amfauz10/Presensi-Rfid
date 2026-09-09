@@ -6,73 +6,129 @@
     <title>Terminal Presensi - SDN Tengah 03</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --saas-bg: #0f172a;
+            --saas-card-bg: #ffffff;
+            --saas-border: #e2e8f0;
+            --saas-text-main: #0f172a;
+            --saas-text-muted: #64748b;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden; /* MENGUNCI DARI SCROLLBAR */
+        }
+
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px 0; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
         }
+
         .card-terminal { 
-            background: #ffffff; 
-            color: #334155; 
-            border-radius: 1.25rem; 
+            background: var(--saas-card-bg); 
+            color: var(--saas-text-main); 
+            border-radius: 18px; 
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
+
         .hidden-input { 
             position: absolute; 
             opacity: 0; 
             pointer-events: none; 
         }
+
+        /* FOTO PAS PROPORSI */
         .student-avatar {
-            width: 160px;
-            height: 160px;
+            width: 210px;      
+            height: 210px;      
             object-fit: cover;
-            border: 4px solid #f1f5f9;
+            border: 4px solid #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px -2px rgba(15, 23, 42, 0.15);
         }
+
         .pulse-icon {
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.06); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.9; }
+            0% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.85; }
+        }
+
+        .badge-terminal-status {
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            padding: 0.6rem 1.4rem !important;
+            border-radius: 10px;
+        }
+
+        .bg-success-light {
+            background-color: #f0fdf4 !important;
+            color: #14532d !important;
+            border: 1.5px solid #86efac !important;
+        }
+
+        .bg-warning-light {
+            background-color: #fffbeb !important;
+            color: #92400e !important;
+            border: 1.5px solid #fde68a !important;
+        }
+
+        .bg-danger-light {
+            background-color: #fef2f2 !important;
+            color: #991b1b !important;
+            border: 1.5px solid #fecaca !important;
+        }
+
+        .text-header-sub {
+            color: #94a3b8 !important;
+            font-weight: 500;
+        }
+
+        .btn-kembali {
+            color: #475569 !important;
+            font-weight: 600;
         }
     </style>
 </head>
 <body class="d-flex align-items-center justify-content-center">
 
-<div class="container">
+<div class="container py-2">
     <div class="row justify-content-center">
-        <div class="col-lg-7 col-md-9 text-center">
+        <div class="col-xl-7 col-lg-9 col-md-11 text-center">
             
             <!-- HEADER INFO SEKOLAH -->
-            <div class="mb-4">
-                <h1 class="fw-bold text-white mb-1" style="letter-spacing: 0.5px;">Gerbang Presensi</h1>
-                <h5 class="text-white-50 fw-normal">SD Negeri Tengah 03 Jakarta Timur</h5>
+            <div class="mb-3">
+                <h3 class="fw-bold text-white mb-0" style="font-size: 1.5rem;">Gerbang Presensi</h3>
+                <div class="text-header-sub small mb-1">SD Negeri Tengah 03 Jakarta Timur</div>
                 
                 <!-- JAM & TANGGAL DIGITAL -->
-                <div id="live-clock" class="fw-bold my-2" style="font-size: 3.5rem; text-shadow: 0 4px 12px rgba(0,0,0,0.3); color: #60a5fa;">00:00:00</div>
-                <div id="live-date" class="text-white-50 small fw-medium" style="letter-spacing: 1px;">-</div>
+                <div id="live-clock" class="fw-bold font-monospace" style="font-size: 2.85rem; color: #38bdf8; text-shadow: 0 4px 12px rgba(0,0,0,0.4); line-height: 1.1;">00:00:00</div>
+                <div id="live-date" class="text-header-sub small fw-bold mt-1" style="letter-spacing: 0.05em; font-size: 0.8rem;">-</div>
             </div>
 
             <!-- MAIN TERMINAL SCREEN -->
-            <div class="card card-terminal shadow-2xl border-0">
-                <div class="card-body p-5">
+            <div class="card card-terminal border-0">
+                <div class="card-body p-4">
                     
-                    <!-- DISPLAY ZONE (Diubah dinamis penuh via AJAX JS) -->
+                    <!-- DISPLAY ZONE -->
                     <div id="interactive-display-zone">
-                        <div id="standby-zone" class="text-center py-4">
-                            <div class="text-primary pulse-icon mb-4">
-                                <i class="bi bi-card-image" style="font-size: 6rem; line-height: 1;"></i>
+                        <div id="standby-zone" class="text-center py-2">
+                            <div class="text-primary pulse-icon mb-2">
+                                <i class="bi bi-card-image" style="font-size: 4.5rem; line-height: 1; color: #3b82f6;"></i>
                             </div>
-                            <h3 class="fw-bold text-slate-800 mb-2">Silakan Tempelkan Kartu RFID</h3>
-                            <p class="text-muted mx-auto mb-4" style="max-width: 380px;">
-                                Dekatkan kartu identitas murid atau atribut chip tap pintar pada perangkat pembaca (*card reader*).
+                            <h5 class="fw-bold mb-1" style="font-size: 1.2rem; color: #0f172a;">Silakan Tempelkan Kartu RFID</h5>
+                            <p class="mx-auto mb-3 small" style="max-width: 400px; color: #475569;">
+                                Dekatkan kartu identitas murid atau atribut chip tap pintar pada perangkat pembaca (<em>card reader</em>).
                             </p>
-                            <div class="d-inline-flex align-items-center gap-2 px-4 py-2 bg-light border rounded-pill font-monospace text-secondary shadow-inner" style="font-size: 0.9rem;">
+                            <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 bg-light border rounded-pill font-monospace" style="font-size: 0.8rem; color: #334155; font-weight: 600;">
                                 <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
                                 Menunggu Sensor RFID...
                             </div>
@@ -85,9 +141,9 @@
                         <input type="text" name="rfid_code" id="rfid_input" class="hidden-input" autofocus autocomplete="off">
                     </form>
 
-                    <div class="mt-4 pt-3 border-top">
-                        <a href="{{ route('dashboard') }}" class="btn btn-link text-decoration-none text-secondary btn-sm fw-medium">
-                            <i class="bi bi-arrow-left-short fs-5 align-middle"></i> Kembali ke Dashboard Utama
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ route('dashboard') }}" class="btn btn-link text-decoration-none btn-sm p-0 btn-kembali">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard Utama
                         </a>
                     </div>
 
@@ -104,7 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const displayZone = document.getElementById('interactive-display-zone');
     const formRfid = document.getElementById('form-rfid');
     
-    // OPTIMASI 4: Hilangkan polling interval, ganti ke event listener window focus & document click yang ringan
     function keepFocus() {
         rfidInput.focus();
     }
@@ -112,7 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', keepFocus);
     window.addEventListener('focus', keepFocus);
 
-    // OPTIMASI 3: Tambahkan Anti Double Scan & System Lock
     let isScanningLock = false;
     let timeoutId = null;
 
@@ -122,15 +176,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(function() {
             displayZone.innerHTML = `
-                <div id="standby-zone" class="text-center py-4">
-                    <div class="text-primary pulse-icon mb-4">
-                        <i class="bi bi-card-image" style="font-size: 6rem; line-height: 1;"></i>
+                <div id="standby-zone" class="text-center py-2">
+                    <div class="text-primary pulse-icon mb-2">
+                        <i class="bi bi-card-image" style="font-size: 4.5rem; line-height: 1; color: #3b82f6;"></i>
                     </div>
-                    <h3 class="fw-bold text-slate-800 mb-2">Silakan Tempelkan Kartu RFID</h3>
-                    <p class="text-muted mx-auto mb-4" style="max-width: 380px;">
-                        Dekatkan kartu identitas murid atau atribut chip tap pintar pada perangkat pembaca (*card reader*).
+                    <h5 class="fw-bold mb-1" style="font-size: 1.2rem; color: #0f172a;">Silakan Tempelkan Kartu RFID</h5>
+                    <p class="mx-auto mb-3 small" style="max-width: 400px; color: #475569;">
+                        Dekatkan kartu identitas murid atau atribut chip tap pintar pada perangkat pembaca (<em>card reader</em>).
                     </p>
-                    <div class="d-inline-flex align-items-center gap-2 px-4 py-2 bg-light border rounded-pill font-monospace text-secondary shadow-inner" style="font-size: 0.9rem;">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 bg-light border rounded-pill font-monospace" style="font-size: 0.8rem; color: #334155; font-weight: 600;">
                         <span class="spinner-grow spinner-grow-sm text-success" role="status"></span>
                         Menunggu Sensor RFID...
                     </div>
@@ -138,12 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             displayZone.style.opacity = '1';
             rfidInput.value = '';
-            isScanningLock = false; // Buka kunci scanner setelah kembali standby
+            isScanningLock = false;
             keepFocus();
         }, 200);
     }
 
-    // OPTIMASI 2 & 7: Gunakan keydown Enter + AJAX Fetch API agar eksekusi < 200ms tanpa reload halaman
     rfidInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -151,11 +204,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isScanningLock) return;
             
             const kode = this.value.trim();
-            if (kode.length < 4) return; // Penyesuaian panjang karakter minimum kode kartu RFID
+            if (kode.length < 4) return;
             
-            isScanningLock = true; // Kunci sistem scanner agar tidak terjadi double-read data
+            isScanningLock = true;
             
-            // Bersihkan timeout standby jika user melakukan tap beruntun sebelum 3 detik
             if (timeoutId) clearTimeout(timeoutId);
 
             const formData = new FormData(formRfid);
@@ -171,44 +223,43 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Tampilkan modul layar sukses presensi secara real-time
                     let avatarHtml = data.foto 
-                        ? `<img src="/storage/${data.foto}" class="rounded-circle student-avatar shadow" alt="Foto ${data.nama}">`
-                        : `<div class="rounded-circle student-avatar shadow bg-light d-flex align-items-center justify-content-center mx-auto border"><i class="bi bi-person-fill text-secondary" style="font-size: 5rem;"></i></div>`;
+                        ? `<img src="/storage/${data.foto}" class="student-avatar mx-auto d-block" alt="Foto ${data.nama}">`
+                        : `<div class="student-avatar bg-light d-flex align-items-center justify-content-center mx-auto border"><i class="bi bi-person-fill text-secondary" style="font-size: 6rem;"></i></div>`;
                     
-                    let alertClass = data.status === 'Terlambat' ? 'alert-warning' : 'alert-success';
+                    let alertClass = data.status === 'Terlambat' ? 'bg-warning-light' : 'bg-success-light';
                     let alertIcon = data.status === 'Terlambat' ? 'bi-clock-history' : 'bi-check-circle-fill';
                     let alertTitle = data.status === 'Terlambat' ? 'Presensi Diterima (Terlambat)' : 'Presensi Berhasil';
 
                     displayZone.innerHTML = `
-                        <div class="text-center">
+                        <div class="text-center py-1">
                             ${avatarHtml}
-                            <h2 class="mt-4 fw-bold text-dark mb-1">${data.nama}</h2>
-                            <h5 class="text-muted mb-4">Kelas ${data.kelas}</h5>
-                            <div class="alert ${alertClass} border-0 rounded-3 shadow-sm py-3 px-4 mx-auto" style="max-width: 400px;">
-                                <h5 class="fw-bold m-0 d-flex align-items-center justify-content-center gap-2">
-                                    <i class="bi ${alertIcon} fs-4"></i> ${alertTitle}
-                                </h5>
+                            <h4 class="mt-2 fw-bold mb-0" style="font-size: 1.45rem; color: #0f172a !important;">${data.nama}</h4>
+                            <span class="fw-bold d-block mb-2" style="font-size: 1rem; color: #334155 !important;">Kelas ${data.kelas}</span>
+                            
+                            <div class="badge-terminal-status ${alertClass} d-inline-flex align-items-center justify-content-center gap-2 mx-auto mb-2" style="max-width: 400px;">
+                                <i class="bi ${alertIcon} fs-5"></i> ${alertTitle}
                             </div>
-                            <div class="text-secondary small mt-2">Tercatat masuk pada pukul <strong>${data.jam} WIB</strong></div>
+                            
+                            <div class="fw-bold font-monospace" style="font-size: 0.9rem; color: #1e293b !important;">
+                                Tercatat pada pukul <span style="color: #0284c7; font-weight: 800;">${data.jam} WIB</span>
+                            </div>
                         </div>
                     `;
                 } else {
-                    // Tampilkan modul layar error/akses ditolak
                     displayZone.innerHTML = `
-                        <div class="text-center py-4">
-                            <div class="mx-auto bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center mb-4 shadow-sm" style="width: 100px; height: 100px;">
-                                <i class="bi bi-x-circle-fill" style="font-size: 4.5rem;"></i>
+                        <div class="text-center py-2">
+                            <div class="mx-auto text-danger bg-danger-light rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 70px; height: 70px;">
+                                <i class="bi bi-x-circle-fill" style="font-size: 3rem;"></i>
                             </div>
-                            <h3 class="fw-bold text-dark mb-3">Akses Ditolak</h3>
-                            <div class="alert alert-danger border-0 d-inline-block rounded-3 px-4 shadow-sm m-0">
+                            <h5 class="fw-bold text-dark mb-1" style="font-size: 1.2rem;">Akses Ditolak</h5>
+                            <div class="badge-terminal-status bg-danger-light d-inline-block m-0">
                                 ${data.message}
                             </div>
                         </div>
                     `;
                 }
                 
-                // Memicu otomatisasi cleanup kembali ke layar standby setelah 3 detik
                 timeoutId = setTimeout(returnToStandby, 2000);
             })
             .catch(error => {
@@ -219,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // JAM & TANGGAL ENGINE REAL-TIME
     function updateClock() {
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };

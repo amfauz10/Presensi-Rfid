@@ -8,25 +8,43 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Membuat tabel siswas dengan skema final.
+     * Sudah mencakup: foto, status, alasan_nonaktif, tahun_ajaran_lulus_id.
+     * (Kolom nama_orang_tua sengaja tidak disertakan karena tidak dipakai.)
      */
     public function up(): void
     {
-        // Pengaman: Buat tabel hanya jika belum ada di database
-        if (!Schema::hasTable('siswas')) {
-            Schema::create('siswas', function (Blueprint $table) {
-                $table->id();
-                $table->string('rfid_code')->unique();
-                $table->string('nisn')->unique();
-                $table->string('nama_siswa');
-                $table->string('no_hp_orang_tua'); // Integrasi WhatsApp Gateway
-                
-                // Menghubungkan langsung ke id milik tabel kelas yang sudah terbuat di awal
-                $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
-                
-                $table->timestamps();
-            });
-        }
+        Schema::create('siswas', function (Blueprint $table) {
+            $table->id();
+
+            // Kode RFID kartu fisik siswa (nullable: siswa tanpa kartu tetap bisa didata)
+            $table->string('rfid_code')->nullable()->unique();
+
+            $table->string('nisn')->unique();
+            $table->string('nama_siswa');
+            $table->string('no_hp_orang_tua');   // Digunakan oleh WhatsApp Gateway
+
+            // Pengelompokan siswa ke dalam kelas
+            $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
+
+            // Status keaktifan: Aktif | Alumni | Tidak Aktif
+            // VARCHAR(50) dipilih agar fleksibel untuk nilai status baru tanpa perlu migrate ulang
+            $table->string('status', 50)->default('Aktif');
+
+            // Alasan spesifik saat status = 'Tidak Aktif' (Pindah Sekolah, Meninggal Dunia, dll.)
+            $table->string('alasan_nonaktif')->nullable();
+
+            // Tahun ajaran saat siswa dinyatakan lulus/Alumni
+            $table->foreignId('tahun_ajaran_lulus_id')
+                  ->nullable()
+                  ->constrained('tahun_ajarans')
+                  ->nullOnDelete();
+
+            // Path foto profil siswa (disimpan di storage/app/public/siswa/)
+            $table->string('foto')->nullable();
+
+            $table->timestamps();
+        });
     }
 
     /**

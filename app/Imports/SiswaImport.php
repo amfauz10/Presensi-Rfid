@@ -61,7 +61,6 @@ class SiswaImport implements ToModel, WithUpserts
         'nisn'            => $nisnClean,
         'nama_siswa'      => $namaClean,
         'rfid_code'       => null,
-        'nama_orang_tua'  => '-',
         'no_hp_orang_tua' => '-',
         'status'          => 'Aktif',
         ]);

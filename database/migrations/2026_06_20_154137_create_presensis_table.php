@@ -8,30 +8,53 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Membuat tabel presensis dengan skema final.
+     * Sudah mencakup: siswa_id (FK), tahun_ajaran_id (FK), keterangan,
+     *                 dokumen, sumber (ENUM rfid/manual), status (ENUM),
+     *                 tanpa kolom waktu_masuk yang redundan.
      */
     public function up(): void
     {
-        // Pastikan tabel tidak dibuat ulang jika entah bagaimana sudah terbentuk
-        if (!Schema::hasTable('presensis')) {
-            Schema::create('presensis', function (Blueprint $table) {
-                $table->id();
-                $table->string('rfid_code');      
-                $table->dateTime('waktu_masuk');  
-                $table->string('status');         
-                $table->unsignedBigInteger('kelas_id')->nullable();
-                $table->timestamps();
-            });
+        Schema::create('presensis', function (Blueprint $table) {
+            $table->id();
 
-            // Pasang foreign key terpisah dengan try-catch agar antrean tetap aman
-            try {
-                Schema::table('presensis', function (Blueprint $table) {
-                    $table->foreign('kelas_id')->references('id')->on('kelas')->onDelete('cascade');
-                });
-            } catch (\Exception $e) {
-                // Abaikan jika tabel kelas belum siap di antrean awal
-            }
-        }
+            // Jejak mentah kartu RFID yang discan (audit trail), nullable
+            // karena presensi manual tidak butuh rfid_code
+            $table->string('rfid_code')->nullable();
+
+            // Relasi utama ke siswa (FK asli, menggantikan rfid_code sebagai kunci relasi)
+            $table->foreignId('siswa_id')
+                  ->nullable()
+                  ->constrained('siswas')
+                  ->cascadeOnDelete();
+
+            // Status kehadiran dengan domain nilai terbatas (mencegah typo/nilai liar)
+            $table->enum('status', ['Hadir', 'Terlambat', 'Sakit', 'Izin', 'Alpa']);
+
+            // Penanda asal data: 'rfid' = hasil tap kartu | 'manual' = input manual
+            // Presensi hasil tap RFID hanya boleh ditimpa jika admin menyentuh baris secara eksplisit
+            $table->enum('sumber', ['rfid', 'manual'])->nullable();
+
+            // Kelas siswa saat presensi terjadi (snapshot, meski siswa kelak pindah kelas)
+            $table->foreignId('kelas_id')
+                  ->nullable()
+                  ->constrained('kelas')
+                  ->cascadeOnDelete();
+
+            // Tahun ajaran aktif saat presensi terjadi
+            $table->foreignId('tahun_ajaran_id')
+                  ->nullable()
+                  ->constrained('tahun_ajarans')
+                  ->nullOnDelete();
+
+            // Keterangan tambahan (diisi saat Sakit/Izin)
+            $table->text('keterangan')->nullable();
+
+            // Surat keterangan / dokumen pendukung (path file)
+            $table->string('dokumen')->nullable();
+
+            $table->timestamps();
+        });
     }
 
     /**

@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Siswa;
 use App\Models\Presensi;
 use App\Models\Kelas; 
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Exports\SiswaExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\SiswaImport;
 use App\Services\FonnteService;
@@ -130,25 +130,6 @@ class SiswaController extends Controller
     }
 
     /**
-     * Fungsi untuk ekspor excel data siswa per kelas.
-     */
-    public function exportExcel(Request $request)
-    {
-        $kelas_id = $request->query('kelas_id');
-        
-        $nama_file = 'Data_Siswa';
-        if ($kelas_id) {
-            $kelas = Kelas::find($kelas_id);
-            $nama_file .= '_Kelas_' . ($kelas ? $kelas->nama_kelas : $kelas_id);
-        } else {
-            $nama_file .= '_Semua_Kelas';
-        }
-        $nama_file .= '_' . date('Y-m-d') . '.xlsx';
-
-        return Excel::download(new SiswaExport($kelas_id), $nama_file);
-    }
-
-    /**
      * Fungsi proses impor data excel/csv dari sekolah
      */
     public function importExcel(Request $request)
@@ -188,7 +169,21 @@ class SiswaController extends Controller
     public function edit($id)
     {
         $siswa = Siswa::findOrFail($id);
-        $daftar_kelas = Kelas::all(); 
+
+        // REVISI DOSEN (Poin 3): Dropdown "Rombel / Penempatan Kelas" hanya
+        // menampilkan kelas seangkatan dengan kelas siswa saat ini (mis. siswa
+        // di "3A" hanya menampilkan "3A" & "3B"), agar admin tidak salah pindah
+        // tingkat. Diambil dari huruf/angka depan nama_kelas (mis. "3A" -> "3"),
+        // tanpa kolom/tabel tingkat baru.
+        $tingkatSaatIni = preg_replace('/[^0-9]/', '', $siswa->kelas->nama_kelas ?? '');
+        if ($tingkatSaatIni !== '') {
+            $daftar_kelas = Kelas::where('nama_kelas', 'like', $tingkatSaatIni . '%')
+                ->orderBy('nama_kelas')
+                ->get();
+        } else {
+            // Fallback: siswa belum punya kelas (data lama/kosong), tampilkan semua
+            $daftar_kelas = Kelas::orderBy('nama_kelas')->get();
+        }
         
         // PERBAIKAN: Blok abort(404) dihapus agar data berstatus 'Alumni' bisa tetap dibuka form editnya.
         
@@ -211,6 +206,13 @@ class SiswaController extends Controller
             'no_hp_orang_tua' => 'required|string', 
             'kelas_id'        => 'required|exists:kelas,id',
             'foto'            => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            // REVISI DOSEN (Poin 1 & 2 - disederhanakan): status sekarang cuma
+            // 3 nilai umbrella: Aktif, Alumni, Tidak Aktif. Alasan spesifik
+            // "Tidak Aktif" (pindah/meninggal/putus sekolah/dll) disimpan
+            // terpisah di kolom 'alasan_nonaktif' agar tidak menampilkan label
+            // sensitif ("Meninggal") secara terang-terangan di banyak tempat UI.
+            'status'          => 'nullable|in:Aktif,Tidak Aktif,Alumni',
+            'alasan_nonaktif' => 'nullable|required_if:status,Tidak Aktif|string|max:100',
         ], [
             'rfid_code.unique'   => 'UID RFID ini sudah digunakan oleh siswa lain!',
             'nisn.unique'        => 'NISN ini sudah digunakan oleh siswa lain!',
@@ -218,6 +220,8 @@ class SiswaController extends Controller
             'foto.image'         => 'Berkas harus berupa gambar.',
             'foto.mimes'         => 'Format foto harus jpeg, png, atau jpg.',
             'foto.max'           => 'Ukuran foto maksimal adalah 2 MB.',
+            'status.in'          => 'Status siswa tidak valid.',
+            'alasan_nonaktif.required_if' => 'Alasan wajib dipilih ketika status "Tidak Aktif".',
         ]);
 
         $dataUpdate = [
@@ -226,6 +230,10 @@ class SiswaController extends Controller
             'nama_siswa'      => $request->nama_siswa,
             'no_hp_orang_tua' => $request->no_hp_orang_tua, 
             'kelas_id'        => $request->kelas_id,
+            'status'          => $request->status ?? $siswa->status,
+            // Kosongkan alasan_nonaktif otomatis kalau status bukan "Tidak Aktif"
+            // (mis. admin balikin status jadi Aktif lagi), biar data tidak nyangkut.
+            'alasan_nonaktif' => $request->status === 'Tidak Aktif' ? $request->alasan_nonaktif : null,
         ];
 
         if ($request->hasFile('foto')) {
@@ -238,11 +246,15 @@ class SiswaController extends Controller
         $siswa->update($dataUpdate);
 
         // OOTB REDIRECT HANDLING: 
-        // Jika yang diedit adalah alumni, kembalikan ke halaman daftar alumni agar admin tidak bingung
-        if ($siswa->status == 'Alumni') {
+        // Siswa berstatus Alumni/Tidak Aktif otomatis hilang dari daftar
+        // aktif kelas (lihat SiswaController@index & @show yang memfilter
+        // where('status','Aktif')), sehingga diarahkan ke halaman "Riwayat
+        // Siswa Nonaktif" (tab sesuai statusnya) alih-alih ke kelas yang
+        // sudah tidak menampilkannya.
+        if (in_array($siswa->status, ['Alumni', 'Tidak Aktif'])) {
             return redirect()
-                ->route('alumni.index')
-                ->with('sukses', 'Data alumni berhasil diperbarui!');
+                ->route('alumni.index', ['status' => $siswa->status])
+                ->with('sukses', 'Status siswa "' . $siswa->nama_siswa . '" berhasil diperbarui. Data & riwayat presensinya tetap tersimpan.');
         }
 
         return redirect()
@@ -263,12 +275,13 @@ class SiswaController extends Controller
                 Storage::disk('public')->delete($siswa->foto);
             }
 
-            $target_hapus = ['MANUAL_' . $siswa->id];
-            if (!empty($siswa->rfid_code)) {
-                $target_hapus[] = $siswa->rfid_code;
-            }
-            
-            Presensi::whereIn('rfid_code', $target_hapus)->delete();
+            // PERBAIKAN: Riwayat presensi dihapus lewat foreign key 'siswa_id'
+            // yang sesungguhnya, bukan lagi menyusun daftar rfid_code + kode
+            // semu 'MANUAL_<id>'. Constraint FK di database (cascadeOnDelete)
+            // sebenarnya sudah otomatis membersihkan baris ini saat siswa
+            // dihapus, namun dihapus eksplisit di sini agar pesan sukses tetap
+            // akurat dan proses tetap jelas dibaca dalam satu transaksi.
+            Presensi::where('siswa_id', $siswa->id)->delete();
             $siswa->delete();
 
             DB::commit();
@@ -303,11 +316,10 @@ class SiswaController extends Controller
                     }
                 }
 
-                $rfid_targets = $daftar_siswa->pluck('rfid_code')->filter()->toArray();
-                $manual_targets = $daftar_siswa->map(function($s) { return 'MANUAL_' . $s->id; })->toArray();
-                $all_targets = array_merge($rfid_targets, $manual_targets);
-
-                Presensi::whereIn('rfid_code', $all_targets)
+                // PERBAIKAN: Hapus riwayat presensi lewat 'siswa_id' (FK asli)
+                // ditambah 'kelas_id' sebagai jaring pengaman, tanpa perlu lagi
+                // menyusun daftar rfid_code + kode semu 'MANUAL_<id>'.
+                Presensi::whereIn('siswa_id', $daftar_siswa->pluck('id'))
                     ->orWhere('kelas_id', $kelas_id)
                     ->delete();
 
@@ -333,31 +345,16 @@ class SiswaController extends Controller
      */
     private function kirimNotifikasiWhatsApp($nomor_tujuan, $pesan)
     {
-        $token = "TOKEN_FONNTE_ANDA_DISINI"; 
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.fonnte.com/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 10, 
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => array(
-                'target'      => $nomor_tujuan,
-                'message'     => $pesan,
-                'countryCode' => '62',
-            ),
-            CURLOPT_HTTPHEADER => array(
-                "Authorization: $token"
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        return $response;
+        // PERBAIKAN: Sebelumnya fungsi ini memakai curl manual yang di-hardcode
+        // khusus format request Fonnte (field 'target', 'message', 'countryCode').
+        // Kalau Admin mengganti provider WA di Pengaturan menjadi Wablas (yang
+        // formatnya beda -- field 'phone', endpoint '/api/send-message'), pesan
+        // pendaftaran siswa baru ini akan tetap terkirim dengan format Fonnte ke
+        // URL Wablas dan gagal, walau notifikasi presensi RFID (yang sudah
+        // memakai FonnteService) berjalan normal sesuai provider yang dipilih.
+        // Sekarang kedua jalur notifikasi memakai service yang sama, sehingga
+        // provider yang dipakai konsisten di seluruh sistem.
+        $fonnte = new FonnteService();
+        return $fonnte->sendMessage($nomor_tujuan, $pesan);
     }
 }

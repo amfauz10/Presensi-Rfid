@@ -13,21 +13,37 @@ class Presensi extends Model
     // Kolom yang diizinkan untuk pengisian massal (Mass Assignment)
     protected $fillable = [
         'rfid_code', 
-        'waktu_masuk', 
+        'siswa_id',
         'status', 
+        'sumber',
         'kelas_id', 
         'keterangan',
+        'dokumen',
         'tahun_ajaran_id'
     ];
 
     /**
      * Relasi Banyak-ke-Satu (Inverse Relationship)
-     * Menghubungkan data presensi kembali ke identitas Siswa pemilik kartu.
-     * Mengikat kolom 'rfid_code' di tabel presensis ke kolom 'rfid_code' di tabel siswas.
+     * Menghubungkan data presensi kembali ke identitas Siswa pemilik kartu,
+     * lewat foreign key asli 'siswa_id' -> 'siswas.id'.
+     *
+     * CATATAN PERBAIKAN: Sebelumnya relasi ini mengikat kolom 'rfid_code' di
+     * presensis ke 'rfid_code' di siswas (bukan foreign key sungguhan, hanya
+     * pencocokan string, tanpa constraint integritas referensial di database).
+     * Kolom 'rfid_code' tetap disimpan sebagai jejak mentah kartu yang discan,
+     * namun kunci relasi resmi sekarang adalah 'siswa_id'.
      */
     public function siswa(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class, 'rfid_code', 'rfid_code');
+        return $this->belongsTo(Siswa::class, 'siswa_id', 'id');
+    }
+
+    /**
+     * Riwayat notifikasi WhatsApp yang dikirim untuk baris presensi ini.
+     */
+    public function logNotifikasi()
+    {
+        return $this->hasMany(LogNotifikasi::class, 'presensi_id', 'id');
     }
 
     /**

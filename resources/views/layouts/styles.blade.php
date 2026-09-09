@@ -24,8 +24,7 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    /* MENGUBAH FONT GLOBAL MENJADI ARIAL AGAR SAMA DENGAN LAPORAN */
-    font-family: 'Arial', sans-serif !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 html, body{
@@ -449,43 +448,43 @@ DATA SISWA
 }
 
 /* ===================================================
-RESPONSIVE (SIDEBAR OFF-CANVAS UNTUK TABLET & MOBILE)
+PERMANENT DESKTOP LAYOUT (WITH ENLARGED TOUCH TARGETS)
 =================================================== */
 
-@media(max-width:992px){
-
-body{
-    display:block; /* di layar sempit sidebar jadi overlay, bukan flex-child */
+.sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 240px !important;
+    max-width: 240px !important;
+    height: 100vh !important;
+    z-index: 1030 !important;
+    transform: none !important;
+    background: #ffffff;
+    border-right: 1px solid var(--border);
 }
 
-.sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:280px;
-    max-width:80vw;
-    height:100vh;
-    transform:translateX(-100%);
-    box-shadow:0 10px 40px rgba(15,23,42,.15);
+.main-content {
+    margin-left: 240px !important;
+    width: calc(100% - 240px) !important;
+    max-width: calc(100% - 240px) !important;
+    padding: 24px 28px !important;
 }
 
-.sidebar.show{
-    transform:translateX(0);
+/* Touch Target & Readability Boosts */
+.btn {
+    min-height: 40px;
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
-.sidebar-toggle-btn{
-    display:flex;
+.form-control, .form-select, .saas-form-control, .saas-form-select {
+    min-height: 42px;
+    font-size: 0.875rem;
 }
 
-.sidebar-backdrop.show{
-    display:block;
+.table-responsive {
+    border-radius: 12px;
 }
 
-.main-content{
-    width:100%;
-    padding:20px;
-    padding-top:76px; /* beri ruang untuk tombol toggle di kiri atas */
-}
-
-}
 </style>

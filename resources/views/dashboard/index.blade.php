@@ -4,26 +4,20 @@
 
 {{-- =========================
      WIDGET JAM & TANGGAL LIVE
-     Tampil di dashboard Admin maupun Guru/Wali Kelas
+     Tampil di dashboard Admin maupun Wali Kelas
 ========================== --}}
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-white rounded-4 border shadow-premium px-4 py-3 mb-4">
-    <div class="d-flex align-items-center gap-3">
-        <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary">
-            <i class="bi bi-calendar3 fs-5"></i>
-        </div>
-        <div>
-            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.3px;">Hari Ini</small>
-            <span id="live-tanggal" class="fw-bold text-dark" style="font-size: 1.05rem;">Memuat...</span>
-        </div>
-    </div>
-    <div class="d-flex align-items-center gap-3">
-        <div class="bg-success bg-opacity-10 p-2 rounded-3 text-success">
-            <i class="bi bi-clock-fill fs-5"></i>
-        </div>
-        <div>
-            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.3px;">Waktu Sekarang (WIB)</small>
-            <span id="live-jam" class="fw-bold text-dark font-monospace" style="font-size: 1.05rem;">--:--:--</span>
-        </div>
+<div class="d-flex justify-content-end mb-2">
+    <div class="d-inline-flex align-items-center gap-3 px-3 py-1.5 bg-light-subtle rounded-pill border border-light-subtle" style="font-size: 0.82rem; color: #64748b; background-color: rgba(248, 250, 252, 0.8);">
+        <span class="d-flex align-items-center gap-2">
+            <i class="bi bi-calendar3 text-secondary"></i>
+            <span id="live-tanggal" class="fw-semibold">Memuat...</span>
+        </span>
+        <span class="text-muted opacity-50">|</span>
+        <span class="d-flex align-items-center gap-2 text-dark">
+            <i class="bi bi-clock text-primary"></i>
+            <span id="live-jam" class="fw-bold font-monospace">--:--:--</span>
+            <span class="badge bg-secondary bg-opacity-10 text-secondary border-0" style="font-size: 0.65rem; padding: 2px 4px;">WIB</span>
+        </span>
     </div>
 </div>
 

@@ -5,19 +5,6 @@ namespace App\Services;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Service pengiriman notifikasi WhatsApp.
- *
- * Nama class tetap "FonnteService" agar tidak perlu mengubah pemanggilnya
- * (App\Jobs\SendWhatsAppNotification), namun secara isi sekarang mendukung
- * lebih dari satu provider/gateway WhatsApp secara nyata (bukan cuma ganti
- * endpoint doang) — karena tiap provider punya format request API yang
- * berbeda-beda, jadi tidak bisa otomatis "pindah" hanya dengan mengganti URL.
- *
- * Provider yang didukung saat ini: Fonnte, Wablas.
- * Untuk menambah provider baru, cukup tambahkan 1 blok "case" baru di
- * method sendMessage() sesuai format API resmi provider tersebut.
- */
 class FonnteService
 {
     protected $provider;

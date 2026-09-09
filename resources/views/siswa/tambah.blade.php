@@ -218,15 +218,12 @@
                                 <span class="input-group-text"><i class="bi bi-whatsapp text-muted"></i></span>
                                 <input type="text" name="no_hp_orang_tua" 
                                     value="{{ old('no_hp_orang_tua') }}"
-                                    placeholder="Contoh: 6281234567890"
+                                    placeholder="Contoh: 081234567890"
                                     class="form-control shadow-none @error('no_hp_orang_tua') is-invalid @enderror" style="padding: 10px 12px;">
                                 @error('no_hp_orang_tua')
                                     <div class="invalid-feedback px-2">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <span class="text-muted d-block mt-2" style="font-size: 0.75rem; line-height: 1.4;">
-                                Gunakan awalan kode negara <strong>628</strong> (tanpa karakter + atau spasi) untuk sinkronisasi pengiriman notifikasi kirim pesan otomatis.
-                            </span>
                         </div>
 
                         <!-- Bagian Pembungkus Pratinjau Foto Murid (Sinkron dengan edit.blade.php) -->

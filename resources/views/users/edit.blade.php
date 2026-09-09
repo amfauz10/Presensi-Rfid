@@ -171,7 +171,7 @@
                                  Administrator
                             </option>
                             <option value="guru" {{ old('role', $user->role) == 'guru' ? 'selected' : '' }}>
-                                 Guru / Staf
+                                 Wali Kelas
                             </option>
                         </select>
                         
@@ -212,7 +212,7 @@
                     <!-- NIP Guru/Wali Kelas -->
                     <div class="col-md-6">
                         <label class="form-label fw-semibold mb-2">
-                            NIP Guru <span class="text-muted fw-normal">(opsional)</span>
+                            NIP Wali Kelas <span class="text-muted fw-normal">(opsional)</span>
                         </label>
                         <input
                             type="text"

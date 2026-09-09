@@ -109,7 +109,7 @@
         <div>
             <h2 class="fw-bold mt-3 mb-1 text-dark">Tambah User Baru</h2>
             <p class="text-muted mb-0">
-                Tambahkan akun administrator atau guru yang dapat mengakses sistem presensi.
+                Tambahkan akun administrator atau wali kelas yang dapat mengakses sistem presensi.
             </p>
         </div>
         <div class="badge bg-light text-primary border px-3 py-2 rounded-pill fs-7">
@@ -177,7 +177,7 @@
                             name="email"
                             value="{{ old('email') }}"
                             class="form-control form-control-custom @error('email') is-invalid @enderror"
-                            placeholder="Contoh: guru4a@sdntengah03.sch.id">
+                            placeholder="Contoh: walikelas4a@sdntengah03.sch.id">
 
                         @error('email')
                             <div class="invalid-feedback ps-1">
@@ -231,7 +231,7 @@
                             </option>
 
                             <option value="guru" {{ old('role') == 'guru' ? 'selected' : '' }}>
-                                Guru / Wali Kelas (Akses Data Presensi)
+                                Wali Kelas (Akses Data Presensi)
                             </option>
 
                         </select>
@@ -272,7 +272,7 @@
 
                 <!-- NIP Guru/Wali Kelas -->
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">NIP Guru <span class="text-muted fw-normal">(opsional, khusus wali kelas)</span></label>
+                    <label class="form-label fw-semibold">NIP Wali Kelas <span class="text-muted fw-normal">(opsional)</span></label>
                     <div class="input-group-custom">
                         <i class="bi bi-card-text input-icon"></i>
                         <input

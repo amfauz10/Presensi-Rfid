@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Membuat tabel users, password_reset_tokens, dan sessions.
+     * Sudah mencakup kolom: role, kelas_id (FK ke kelas), nip.
      */
     public function up(): void
     {
@@ -18,6 +19,21 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+
+            // Role pengguna sistem: admin atau guru (wali kelas)
+            $table->enum('role', ['admin', 'guru'])->default('guru');
+
+            // Kelas yang diampu (hanya untuk role 'guru')
+            // Unique: satu kelas hanya boleh dipegang satu guru
+            $table->foreignId('kelas_id')
+                  ->nullable()
+                  ->unique()
+                  ->constrained('kelas')
+                  ->nullOnDelete();
+
+            // NIP guru/wali kelas, ditampilkan di tanda tangan rekap laporan
+            $table->string('nip', 30)->nullable();
+
             $table->timestamps();
         });
 

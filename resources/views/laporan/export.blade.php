@@ -173,41 +173,41 @@
         <td style="{{ $rumusStyle }}">S</td>
         <td style="{{ $rumusStyle }}">=</td>
         <td style="{{ $rumusStyle }}">{{ $totalSakitKelas }}</td>
-        <td style="{{ $rumusStyle }}">&#247;</td>
-        <td style="{{ $rumusStyle }}">{{ $jumlahSiswaSatuKelas }}</td>
-        <td style="{{ $rumusStyle }}">&times; 100%</td>
+        <td style="{{ $rumusStyle }}">÷</td>
+        <td colspan="3" style="{{ $rumusStyle }}">{{ $jumlahSiswaSatuKelas }}</td>
+        <td colspan="5" style="{{ $rumusStyle }}">x 100%</td>
         <td style="{{ $rumusStyle }}">=</td>
-        <td style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenSakitKelas, 2) }}%</td>
+        <td colspan="25" style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenSakitKelas, 2) }}%</td>
     </tr>
     <tr>
         <td style="{{ $rumusStyle }}">I</td>
         <td style="{{ $rumusStyle }}">=</td>
         <td style="{{ $rumusStyle }}">{{ $totalIzinKelas }}</td>
-        <td style="{{ $rumusStyle }}">&#247;</td>
-        <td style="{{ $rumusStyle }}">{{ $jumlahSiswaSatuKelas }}</td>
-        <td style="{{ $rumusStyle }}">&times; 100%</td>
+        <td style="{{ $rumusStyle }}">÷</td>
+        <td colspan="3" style="{{ $rumusStyle }}">{{ $jumlahSiswaSatuKelas }}</td>
+        <td colspan="5" style="{{ $rumusStyle }}">x 100%</td>
         <td style="{{ $rumusStyle }}">=</td>
-        <td style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenIzinKelas, 2) }}%</td>
+        <td colspan="25" style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenIzinKelas, 2) }}%</td>
     </tr>
     <tr>
         <td style="{{ $rumusStyle }}">A</td>
         <td style="{{ $rumusStyle }}">=</td>
         <td style="{{ $rumusStyle }}">{{ $totalAlpaKelas }}</td>
-        <td style="{{ $rumusStyle }}">&#247;</td>
-        <td style="{{ $rumusStyle }}">{{ $jumlahSiswaSatuKelas }}</td>
-        <td style="{{ $rumusStyle }}">&times; 100%</td>
+        <td style="{{ $rumusStyle }}">÷</td>
+        <td colspan="3" style="{{ $rumusStyle }}">{{ $jumlahSiswaSatuKelas }}</td>
+        <td colspan="5" style="{{ $rumusStyle }}">x 100%</td>
         <td style="{{ $rumusStyle }}">=</td>
-        <td style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenAlpaKelas, 2) }}%</td>
+        <td colspan="25" style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenAlpaKelas, 2) }}%</td>
     </tr>
     <tr>
         <td style="{{ $rumusStyle }}">H</td>
         <td style="{{ $rumusStyle }}">=</td>
-        <td colspan="4" style="{{ $rumusStyle }}">100% &minus; (S + I + A)</td>
+        <td colspan="4" style="{{ $rumusStyle }}">100% - (S + I + A)</td>
         <td style="{{ $rumusStyle }}">=</td>
-        <td style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenHadirKelas, 2) }}%</td>
+        <td colspan="31" style="{{ $rumusStyle }} font-weight:bold;">{{ number_format($persenHadirKelas, 2) }}%</td>
     </tr>
     <tr>
-        <td colspan="8" style="{{ $rumusStyle }} font-style:italic;">
+        <td colspan="38" style="{{ $rumusStyle }} font-style:italic;">
             Keterangan &nbsp;: &nbsp; S = Sakit &nbsp;&nbsp; I = Izin &nbsp;&nbsp; A = Alpa &nbsp;&nbsp; H = Hadir
         </td>
     </tr>
@@ -218,30 +218,34 @@
     {{-- ==================== BLOK TANDA TANGAN ==================== --}}
     @php $ttdStyle = "font-family:Arial, sans-serif; font-size:10px; text-align:center;"; @endphp
     <tr>
-        <td colspan="14"></td>
-        <td colspan="10" style="{{ $ttdStyle }}">Mengetahui,</td>
-        <td colspan="4"></td>
-        <td colspan="10" style="{{ $ttdStyle }}">Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</td>
+        <td colspan="3"></td>
+        <td colspan="15" style="{{ $ttdStyle }}">Mengetahui,</td>
+        <td colspan="2"></td>
+        <td colspan="15" style="{{ $ttdStyle }}">Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</td>
+        <td colspan="3"></td>
     </tr>
     <tr>
-        <td colspan="14"></td>
-        <td colspan="10" style="{{ $ttdStyle }} font-weight:bold;">{{ $labelKepsek }}</td>
-        <td colspan="4"></td>
-        <td colspan="10" style="{{ $ttdStyle }} font-weight:bold;">Wali Kelas</td>
+        <td colspan="3"></td>
+        <td colspan="15" style="{{ $ttdStyle }} font-weight:bold;">{{ $labelKepsek }}</td>
+        <td colspan="2"></td>
+        <td colspan="15" style="{{ $ttdStyle }} font-weight:bold;">Wali Kelas</td>
+        <td colspan="3"></td>
     </tr>
-    <tr><td colspan="38" style="font-size:10px;">&nbsp;</td></tr>
-    <tr><td colspan="38" style="font-size:10px;">&nbsp;</td></tr>
-    <tr><td colspan="38" style="font-size:10px;">&nbsp;</td></tr>
+    <tr><td colspan="38" style="font-size:13px;">&nbsp;</td></tr>
+    <tr><td colspan="38" style="font-size:13px;">&nbsp;</td></tr>
+    <tr><td colspan="38" style="font-size:13px;">&nbsp;</td></tr>
     <tr>
-        <td colspan="14"></td>
-        <td colspan="10" style="{{ $ttdStyle }} font-weight:bold; text-decoration:underline;">{{ $namaKepsek }}</td>
-        <td colspan="4"></td>
-        <td colspan="10" style="{{ $ttdStyle }} font-weight:bold; text-decoration:underline;">{{ $namaWali }}</td>
+        <td colspan="3"></td>
+        <td colspan="15" style="{{ $ttdStyle }} font-weight:bold; text-decoration:underline;">{{ $namaKepsek }}</td>
+        <td colspan="2"></td>
+        <td colspan="15" style="{{ $ttdStyle }} font-weight:bold; text-decoration:underline;">{{ $namaWali }}</td>
+        <td colspan="3"></td>
     </tr>
     <tr>
-        <td colspan="14"></td>
-        <td colspan="10" style="{{ $ttdStyle }} font-size:9px;">NIP. {{ $nipKepsek }}</td>
-        <td colspan="4"></td>
-        <td colspan="10" style="{{ $ttdStyle }} font-size:9px;">NIP. {{ $nipWali }}</td>
+        <td colspan="3"></td>
+        <td colspan="15" style="{{ $ttdStyle }} font-size:9px;">NIP. {{ $nipKepsek }}</td>
+        <td colspan="2"></td>
+        <td colspan="15" style="{{ $ttdStyle }} font-size:9px;">NIP. {{ $nipWali }}</td>
+        <td colspan="3"></td>
     </tr>
 </table>

@@ -3,377 +3,459 @@
 @section('title', 'Kelola User')
 
 @section('content')
+<style>
+    /* Base SaaS Utility & Variables */
+    :root {
+        --saas-bg: #f8fafc;
+        --saas-card-bg: #ffffff;
+        --saas-border: #e2e8f0;
+        --saas-text-main: #0f172a;
+        --saas-text-muted: #64748b;
+    }
 
-<div class="container-fluid py-4 text-start">
+    body {
+        background-color: var(--saas-bg);
+        color: var(--saas-text-main);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
-    {{-- Header & Tombol Tambah Lebih Modern --}}
+    .container-fluid {
+        padding: 24px;
+    }
+
+    /* Modern Card SaaS Style */
+    .saas-card {
+        background: var(--saas-card-bg);
+        border: 1px solid var(--saas-border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .saas-card:hover {
+        border-color: #cbd5e1;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid var(--saas-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+        border-color: #cbd5e1;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.725rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--saas-text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--saas-text-main);
+        line-height: 1.2;
+    }
+
+    .stat-card .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    /* Custom Form Controls */
+    .saas-form-control, .saas-form-select {
+        border: 1px solid var(--saas-border);
+        border-radius: 8px;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.875rem;
+        color: var(--saas-text-main);
+        background-color: #ffffff;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .saas-form-control:focus, .saas-form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        outline: none;
+    }
+
+    .input-group-saas {
+        border: 1px solid var(--saas-border);
+        border-radius: 8px;
+        background-color: #ffffff;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .input-group-saas:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    .input-group-saas .input-group-text {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+    }
+
+    .input-group-saas .form-control {
+        border: none;
+        box-shadow: none !important;
+        padding-left: 0;
+    }
+
+    /* Table Design */
+    .table-saas {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-saas th {
+        background: #f8fafc;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.725rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--saas-border);
+    }
+
+    .table-saas td {
+        padding: 0.9rem 1rem;
+        font-size: 0.875rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .table-saas tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    .table-saas tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Action Buttons */
+    .action-btn-saas {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--saas-border);
+        background-color: #ffffff;
+        transition: all 0.15s ease;
+        text-decoration: none;
+    }
+
+    .action-btn-saas.edit:hover {
+        background-color: #fffbeb;
+        border-color: #fcd34d;
+        color: #d97706 !important;
+    }
+
+    .action-btn-saas.delete:hover {
+        background-color: #fef2f2;
+        border-color: #fca5a5;
+        color: #dc2626 !important;
+    }
+
+    /* SaaS Badges */
+    .badge-saas {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.725rem;
+        font-weight: 600;
+    }
+
+    .badge-admin { background: #eff6ff; color: #1d4ed8; }
+    .badge-guru { background: #f0fdf4; color: #15803d; }
+
+    /* Modal Clean */
+    .modal-clean-content {
+        border: 1px solid var(--saas-border);
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+</style>
+
+<div class="container-fluid text-start p-0">
+
+    {{-- HEADER & TOMBOL TAMBAH --}}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3 border-bottom border-light pb-3">
         <div>
-            <h3 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.5px;">Kelola User</h3>
-            <p class="text-muted small mb-0">
-                Manajemen akun Admin dan Guru SDN Tengah 03 Jakarta Timur.
+            <h3 class="fw-bold m-0 tracking-tight" style="font-size: 1.5rem;">Kelola User</h3>
+            <p class="text-muted m-0 mt-1 small">
+                Manajemen akun Admin dan Wali Kelas SDN Tengah 03 Jakarta Timur.
             </p>
         </div>
 
-        <a href="{{ route('users.create') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 px-3 shadow-sm hover-up rounded-3" style="height: 40px; font-weight: 600; font-size: 0.85rem; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15) !important;">
-            <i class="bi bi-plus-circle-fill fs-6"></i>
+        <a href="{{ route('users.create') }}" class="btn btn-primary d-inline-flex align-items-center gap-2 px-3 fw-medium" style="border-radius: 8px; padding: 0.55rem 1rem;">
+            <i class="bi bi-plus-lg small"></i>
             Tambah User
         </a>
     </div>
 
-    {{-- Alert yang Lebih Elegan & Ringkas --}}
+    {{-- ALERT BERHASIL --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4 d-flex align-items-center p-3" role="alert" style="border-radius: 12px; background-color: #dcfce7; color: #15803d;">
-            <i class="bi bi-check-circle-fill me-3 fs-5 text-success"></i>
-            <div class="fw-medium">{{ session('success') }}</div>
-            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="top: 1rem; right: 1rem;"></button>
+        <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 border-0 text-start d-flex align-items-center p-3 shadow-sm" role="alert" style="background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0 !important;">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div class="fw-medium small">{{ session('success') }}</div>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
+    {{-- ALERT GAGAL --}}
     @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4 d-flex align-items-center p-3" role="alert" style="border-radius: 12px; background-color: #fef2f2; color: #b91c1c;">
-            <i class="bi bi-exclamation-triangle-fill me-3 fs-5 text-danger"></i>
-            <div class="fw-medium">{{ session('error') }}</div>
-            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close" style="top: 1rem; right: 1rem;"></button>
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 border-0 text-start d-flex align-items-center p-3 shadow-sm" role="alert" style="background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca !important;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            <div class="fw-medium small">{{ session('error') }}</div>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    {{-- Section Statistik Instan --}}
+    {{-- SECTION STATISTIK --}}
     <div class="row g-3 mb-4">
-        <div class="col-6 col-md-4">
-            <div class="card border-0 p-3 position-relative overflow-hidden shadow-premium bg-white rounded-4">
-                <div class="card-body p-0 d-flex align-items-center justify-content-between">
+        <div class="col-12 col-md-4">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <small class="text-muted d-block text-uppercase fw-bold tracking-wider mb-1" style="font-size: 0.7rem;">Total User</small>
-                        <h4 class="fw-bold text-dark mb-0 font-monospace" style="letter-spacing: -0.5px;">{{ $users->count() }}</h4>
+                        <div class="stat-label">Total User</div>
+                        <div class="stat-value">{{ $users->count() }}</div>
                     </div>
-                    <div class="bg-secondary bg-opacity-10 p-2 px-3 rounded-3 text-secondary">
-                        <i class="bi bi-people-fill fs-5"></i>
+                    <div class="stat-icon" style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0;">
+                        <i class="bi bi-people-fill"></i>
                     </div>
                 </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-secondary opacity-50" style="height: 3px;"></div>
-            </div>
-        </div>
-        
-        <div class="col-6 col-md-4">
-            <div class="card border-0 p-3 position-relative overflow-hidden shadow-premium bg-white rounded-4">
-                <div class="card-body p-0 d-flex align-items-center justify-content-between">
-                    <div>
-                        <small class="text-primary d-block text-uppercase fw-bold tracking-wider mb-1" style="font-size: 0.7rem;">Admin</small>
-                        <h4 class="fw-bold text-dark mb-0 font-monospace" style="letter-spacing: -0.5px;">{{ $users->where('role', 'admin')->count() }}</h4>
-                    </div>
-                    <div class="bg-primary bg-opacity-10 p-2 px-3 rounded-3 text-primary">
-                        <i class="bi bi-shield-lock-fill fs-5"></i>
-                    </div>
-                </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-primary" style="height: 3px;"></div>
             </div>
         </div>
         
         <div class="col-12 col-md-4">
-            <div class="card border-0 p-3 position-relative overflow-hidden shadow-premium bg-white rounded-4">
-                <div class="card-body p-0 d-flex align-items-center justify-content-between">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <small class="text-success d-block text-uppercase fw-bold tracking-wider mb-1" style="font-size: 0.7rem;">Guru</small>
-                        <h4 class="fw-bold text-dark mb-0 font-monospace" style="letter-spacing: -0.5px;">{{ $users->where('role', 'guru')->count() }}</h4>
+                        <div class="stat-label" style="color: #1d4ed8;">Admin</div>
+                        <div class="stat-value">{{ $users->where('role', 'admin')->count() }}</div>
                     </div>
-                    <div class="bg-success bg-opacity-10 p-2 px-3 rounded-3 text-success">
-                        <i class="bi bi-mortarboard-fill fs-5"></i>
+                    <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
+                        <i class="bi bi-shield-lock-fill"></i>
                     </div>
                 </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-success" style="height: 3px;"></div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-md-4">
+            <div class="stat-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="stat-label" style="color: #15803d;">Wali Kelas</div>
+                        <div class="stat-value">{{ $users->where('role', 'guru')->count() }}</div>
+                    </div>
+                    <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- Main Card dengan Pembungkus Terpadu Premium --}}
-    <div class="card border-0 mb-5 position-relative overflow-hidden rounded-4 shadow-premium bg-white">
+    {{-- MAIN CARD UTAMA --}}
+    <div class="saas-card overflow-hidden mb-5">
         
-        {{-- Card Header Lebih Informatif --}}
-        <div class="card-header bg-white pt-4 pb-3 px-4 border-0">
-            <h5 class="mb-1 fw-bold text-dark" style="font-size: 1rem;">Daftar Kontrol Pengguna</h5>
+        {{-- Header & Filter Section --}}
+        <div class="p-3 px-4 border-bottom bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Daftar Kontrol Pengguna</h6>
+            <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.775rem;">
+                {{ $users->count() }} akun terdaftar
+            </span>
         </div>
 
-        {{-- Filter & Live Search Ringan (Vanilla JS) --}}
-        <div class="px-4 pb-3 border-0 bg-white">
+        {{-- Filter Inputs --}}
+        <div class="p-3 bg-white border-bottom">
             <div class="row g-2">
                 <div class="col-12 col-md-8">
-                    <div class="input-group search-merge-group">
-                        <span class="input-group-text bg-light border-end-0 py-2 px-3 text-muted">
-                            <i class="bi bi-search small"></i>
-                        </span>
-                        <input type="text" id="searchInput" class="form-control bg-light border-start-0 py-2 ps-1 shadow-none" placeholder="Cari nama atau email user..." style="font-size: 0.9rem;">
+                    <div class="input-group-saas d-flex align-items-center px-2">
+                        <span class="input-group-text p-0 me-2"><i class="bi bi-search small"></i></span>
+                        <input type="text" id="searchInput" class="form-control saas-form-control border-0 ps-0 shadow-none" placeholder="Cari nama atau email user...">
                     </div>
                 </div>
                 <div class="col-12 col-md-4">
-                    <div class="input-group search-merge-group">
-                        <select id="roleFilter" class="form-select bg-light py-2 shadow-none" style="font-size: 0.9rem; color: #475569;">
-                            <option value="all">Semua Jenis Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="guru">Guru</option>
-                        </select>
-                    </div>
+                    <select id="roleFilter" class="form-select saas-form-select shadow-none">
+                        <option value="all">Semua Jenis Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="guru">Wali Kelas</option>
+                    </select>
                 </div>
             </div>
         </div>
+        {{-- Table Data --}}
+        <div class="table-responsive">
+            <table class="table-saas">
+                <thead>
+                    <tr>
+                        <th style="width: 5%" class="text-center">No</th>
+                        <th style="width: 35%">Nama Lengkap</th>
+                        <th style="width: 30%">Alamat Email</th>
+                        <th style="width: 18%" class="text-center">Hak Akses</th>
+                        <th style="width: 12%" class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    @forelse($users as $index => $user)
+                    <tr class="user-row" data-name="{{ strtolower($user->name) }}" data-email="{{ strtolower($user->email) }}" data-role="{{ $user->role }}">
+                        
+                        {{-- Nomor --}}
+                        <td class="text-center text-muted fw-medium small">
+                            {{ $index + 1 }}
+                        </td>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th width="70" class="text-center">No</th>
-                            <th>Nama Lengkap</th>
-                            <th>Alamat Email</th>
-                            <th width="140" class="text-center">Hak Akses</th>
-                            <th width="140" class="text-center">Aksi Terjadwal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody">
-                        @forelse($users as $index => $user)
-                        <tr class="user-row" data-name="{{ strtolower($user->name) }}" data-email="{{ strtolower($user->email) }}" data-role="{{ $user->role }}" style="transition: background-color 0.2s ease;">
-                            
-                            {{-- Nomor Indikator Bulat --}}
-                            <td class="text-center">
-                                <span class="d-inline-flex align-items-center justify-content-center text-secondary rounded-circle fw-semibold font-monospace" style="width: 28px; height: 28px; background-color: #f1f5f9; font-size: 12px;">
-                                    {{ $index + 1 }}
+                        {{-- Nama User --}}
+                        <td>
+                            <div class="d-flex align-items-center gap-2.5">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-secondary" style="width: 34px; height: 34px; background-color: #f1f5f9; flex-shrink: 0; font-size: 0.9rem;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ $user->name }}</div>
+                                    <span class="text-muted small" style="font-size: 0.75rem;">
+                                        {{ $user->role == 'admin' ? 'Administrator Sistem' : 'Wali Kelas' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+
+                        {{-- Email --}}
+                        <td class="text-secondary small">
+                            <div class="d-flex align-items-center gap-1.5">
+                                <i class="bi bi-envelope text-muted" style="font-size: 0.8rem;"></i>
+                                <span>{{ $user->email }}</span>
+                            </div>
+                        </td>
+
+                        {{-- Role Badge --}}
+                        <td class="text-center">
+                            @if($user->role == 'admin')
+                                <span class="badge-saas badge-admin">
+                                    <i class="bi bi-shield-lock-fill"></i> ADMIN
                                 </span>
-                            </td>
+                            @else
+                                <span class="badge-saas badge-guru">
+                                    <i class="bi bi-mortarboard-fill"></i> WALI KELAS
+                                </span>
+                            @endif
+                        </td>
 
-                            {{-- Nama User dengan Icon & Deskripsi --}}
-                            <td>
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 38px; height: 38px; background-color: #eff6ff; flex-shrink: 0;">
-                                        <i class="bi bi-person-fill fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark text-uppercase" style="font-size: 0.84rem; letter-spacing: 0.2px;">{{ $user->name }}</div>
-                                        <span class="text-muted" style="font-size: 0.75rem;">
-                                            {{ $user->role == 'admin' ? 'Administrator Sistem' : 'Tenaga Pendidik' }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </td>
+                        {{-- Tombol Aksi --}}
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center align-items-center gap-1.5">
+                                {{-- Edit --}}
+                                <a href="{{ route('users.edit', $user->id) }}"
+                                   class="action-btn-saas edit text-secondary"
+                                   title="Ubah Data">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
 
-                            {{-- Email dengan Icon amplop --}}
-                            <td class="text-secondary" style="font-size: 0.88rem;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-envelope text-muted opacity-75" style="font-size: 13px;"></i>
-                                    <span>{{ $user->email }}</span>
-                                </div>
-                            </td>
-
-                            {{-- Badge Role Lebih Lembut dan Hidup --}}
-                            <td class="text-center">
-                                @if($user->role == 'admin')
-                                    <span class="badge px-2.5 py-1.5 d-inline-flex align-items-center gap-1 border-0 text-primary bg-primary bg-opacity-10" style="border-radius: 6px; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.3px;">
-                                        <i class="bi bi-shield-lock-fill" style="font-size: 11px;"></i> ADMIN
-                                    </span>
-                                @else
-                                    <span class="badge px-2.5 py-1.5 d-inline-flex align-items-center gap-1 border-0 text-success bg-success bg-opacity-10" style="border-radius: 6px; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.3px;">
-                                        <i class="bi bi-mortarboard-fill" style="font-size: 11px;"></i> GURU
-                                    </span>
+                                {{-- Hapus hanya Wali Kelas --}}
+                                @if($user->role != 'admin')
+                                    <button type="button" 
+                                            class="action-btn-saas delete text-secondary"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#confirmDeleteModal"
+                                            data-user-id="{{ $user->id }}"
+                                            data-user-name="{{ $user->name }}"
+                                            title="Hapus Data">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
                                 @endif
-                            </td>
+                            </div>
+                        </td>
 
-                            {{-- Tombol Aksi Proporsional dengan Hover Effect --}}
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center align-items-center gap-2">
-                                    {{-- Edit --}}
-                                    <a href="{{ route('users.edit', $user->id) }}"
-                                       class="btn p-0 d-flex align-items-center justify-content-center text-warning hover-action-btn shadow-none"
-                                       style="width: 32px; height: 32px; background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; transition: all 0.2s ease;"
-                                       title="Ubah Data">
-                                        <i class="bi bi-pencil-square" style="font-size: 14px;"></i>
-                                    </a>
+                    </tr>
+                    @empty
+                    <tr id="emptyRow">
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <div class="py-3">
+                                <i class="bi bi-people text-slate-300 fs-1 d-block mb-2"></i>
+                                <h6 class="fw-bold text-dark mb-1">Belum Ada Pengguna</h6>
+                                <p class="text-muted small mb-0 px-3">Sistem tidak mendeteksi data user. Silakan klik tombol <strong>"Tambah User"</strong> untuk meregistrasikan akun baru.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
 
-                                    {{-- Hapus hanya Guru --}}
-                                    @if($user->role != 'admin')
-                                        <!-- TRIGGER DIUBAH DENGAN MODAL BOOTSTRAP DINAMIS MENGGUNAKAN BUTTON DATA ATTRIBUTE -->
-                                        <button type="button" 
-                                                class="btn p-0 d-flex align-items-center justify-content-center text-danger hover-action-btn shadow-none"
-                                                style="width: 32px; height: 32px; background-color: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; transition: all 0.2s ease;"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#confirmDeleteModal"
-                                                data-user-id="{{ $user->id }}"
-                                                data-user-name="{{ $user->name }}"
-                                                title="Hapus Data">
-                                            <i class="bi bi-trash" style="font-size: 14px;"></i>
-                                        </button>
-                                    @endif
-                                </div>
-                            </td>
-
-                        </tr>
-                        @empty
-                        {{-- Empty State Informatif & Komunikatif --}}
-                        <tr id="emptyRow">
-                            <td colspan="5" class="text-center py-5" style="background-color: #ffffff;">
-                                <div class="py-4 opacity-75">
-                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 bg-light text-secondary" style="width: 56px; height: 56px;">
-                                        <i class="bi bi-people-fill fs-3"></i>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">Belum Ada Pengguna</h6>
-                                    <p class="text-muted small mb-0 px-3">Sistem tidak mendeteksi data user. Silakan klik tombol <strong>"Tambah User"</strong> untuk meregistrasikan akun baru.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-
-                        {{-- Baris Empty State Tambahan untuk Pencarian/Filter yang Kosong --}}
-                        <tr id="searchEmptyRow" style="display: none;">
-                            <td colspan="5" class="text-center py-5" style="background-color: #ffffff;">
-                                <div class="py-4 opacity-75">
-                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 bg-light text-secondary" style="width: 56px; height: 56px;">
-                                        <i class="bi bi-search fs-3"></i>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">Data Tidak Ditemukan</h6>
-                                    <p class="text-muted small mb-0">Kata kunci atau filter role yang Anda masukkan tidak cocok dengan data manapun.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            {{-- Integrasi Render Pagination Laravel --}}
-            @if(method_exists($users, 'links') && $users->hasPages())
-                <div class="card-footer bg-white py-3 px-4 border-top d-flex justify-content-end">
-                    <div class="pagination-sm mb-0">
-                        {{ $users->links() }}
-                    </div>
-                </div>
-            @endif
-
+                    {{-- Empty State untuk Pencarian Kosong --}}
+                    <tr id="searchEmptyRow" style="display: none;">
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <div class="py-3">
+                                <i class="bi bi-search text-slate-300 fs-1 d-block mb-2"></i>
+                                <h6 class="fw-bold text-dark mb-1">Data Tidak Ditemukan</h6>
+                                <p class="text-muted small mb-0">Kata kunci atau filter role yang Anda masukkan tidak cocok dengan data manapun.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         
-        {{-- Garis bawah dekoratif solid untuk Main Card Terpadu --}}
-        <div class="position-absolute bottom-0 start-0 w-100 bg-primary" style="height: 4px;"></div>
+        {{-- Pagination --}}
+        @if(method_exists($users, 'links') && $users->hasPages())
+            <div class="px-4 py-3 bg-white border-top d-flex justify-content-center">
+                {{ $users->links('pagination::bootstrap-5') }}
+            </div>
+        @endif
+
     </div>
 </div>
 
-{{-- ================= SAAS PREMIUM VALIDATION MODAL FOR HAPUS USER ================= --}}
+{{-- MODAL KONFIRMASI HAPUS --}}
 <div class="modal fade" id="confirmDeleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-        <div class="modal-content modal-saas">
-            <div class="modal-header modal-saas-header justify-content-center position-relative">
-                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                    <i class="bi bi-exclamation-triangle-fill fs-3"></i>
-                </div>
-                <button type="button" class="btn-close position-absolute" style="top: 20px; right: 20px;" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body modal-saas-body text-center">
-                <h5 class="fw-bold text-dark mb-2">Hapus Akun Pengguna?</h5>
-                <p class="text-muted mb-0 small px-2">Tindakan ini akan mencabut hak akses masuk <strong id="deleteModalTargetName" class="text-dark"></strong> secara permanen dari sistem manajemen SDN Tengah 03.</p>
-            </div>
-            <div class="modal-footer modal-saas-footer d-flex gap-2">
-                <button type="button" class="btn btn-saas-secondary flex-grow-1 py-2 fw-semibold" data-bs-dismiss="modal">Tidak, Batal</button>
-                
-                <!-- BINDING ROUTE DIKONTROL OLEH FORM ACTION SECARA DINAMIS VIA JAVASCRIPT -->
-                <form id="deleteModalForm" method="POST" class="flex-grow-1 m-0">
+    <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 380px;">
+        <div class="modal-content modal-clean-content p-4 text-center">
+            <h5 class="fw-bold text-dark mb-2">Hapus Akun Pengguna?</h5>
+            <p class="text-muted small mb-4">
+                Tindakan ini akan mencabut hak akses masuk 
+                <strong id="deleteModalTargetName" class="text-dark"></strong> 
+                secara permanen dari sistem.
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light border w-50 rounded-2 fw-medium" data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <form id="deleteModalForm" method="POST" class="w-50">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-saas-primary w-100 py-2 fw-semibold shadow-none">Ya, Hapus</button>
+                    <button type="submit" class="btn btn-danger w-100 rounded-2 fw-medium">
+                        Ya, Hapus
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Tambahan Inject CSS internal agar halaman interaktif, modern, dan mulus --}}
-<style>
-    body {
-        background-color: #f8fafc;
-    }
-    .shadow-premium {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
-    }
-    .search-merge-group {
-        border-radius: 10px;
-        overflow: hidden;
-        border: 1px solid #dee2e6;
-        transition: all 0.2s ease;
-    }
-    .search-merge-group:focus-within {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1) !important;
-    }
-    .search-merge-group .form-control,
-    .search-merge-group .form-select,
-    .search-merge-group .input-group-text {
-        border: none !important;
-        background-color: #f8f9fa !important;
-    }
-    .table th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: #64748b;
-        padding: 14px 16px !important;
-        background-color: #f8fafc !important;
-        border-bottom: 2px solid #edeff1 !important;
-    }
-    .table td {
-        padding: 14px 16px !important;
-        border-bottom: 1px solid #f1f3f5 !important;
-    }
-    .user-row:hover {
-        background-color: #fcfdfe !important;
-    }
-    .hover-up:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2) !important;
-    }
-    .hover-action-btn:hover {
-        transform: translateY(-1px);
-    }
-    .hover-action-btn.text-warning:hover {
-        background-color: #f59e0b !important;
-        color: #ffffff !important;
-        border-color: #f59e0b !important;
-    }
-    .hover-action-btn.text-danger:hover {
-        background-color: #ef4444 !important;
-        color: #ffffff !important;
-        border-color: #ef4444 !important;
-    }
-
-    /* Premium SaaS Modal Confirmation Stylings */
-    .modal-saas {
-        border-radius: 20px !important;
-        border: none !important;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important;
-    }
-    .modal-saas-header {
-        border-bottom: none !important;
-        padding: 24px 24px 8px 24px !important;
-    }
-    .modal-saas-body {
-        padding: 8px 24px 24px 24px !important;
-    }
-    .modal-saas-footer {
-        border-top: none !important;
-        padding: 0 24px 28px 24px !important;
-        background: transparent !important;
-    }
-    .btn-saas-secondary {
-        background-color: #f1f5f9 !important;
-        color: #475569 !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 10px !important;
-        font-size: 0.9rem;
-    }
-    .btn-saas-secondary:hover {
-        background-color: #e2e8f0 !important;
-    }
-    .btn-saas-primary {
-        border-radius: 10px !important;
-        font-size: 0.9rem;
-    }
-</style>
-
-{{-- Tambahan JavaScript untuk Live Filter & Search instan beserta Logic Modal Dinamis --}}
+{{-- JAVASCRIPT FILTER & MODAL DINAMIS --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
@@ -393,7 +475,6 @@
                 const modalForm = confirmDeleteModal.querySelector('#deleteModalForm');
                 const modalTargetName = confirmDeleteModal.querySelector('#deleteModalTargetName');
                 
-                // Set form action sesuai route destroy user secara dinamis
                 modalForm.action = `/users/${userId}`;
                 modalTargetName.textContent = userName;
             });

@@ -4,98 +4,158 @@
 
 @section('content')
 <style>
-    /* Kartu selaras dengan dashboard: shadow lembut + hover lift halus */
-    .card-custom {
+    /* Base SaaS Utility & Variables */
+    :root {
+        --saas-bg: #f8fafc;
+        --saas-card-bg: #ffffff;
+        --saas-border: #e2e8f0;
+        --saas-text-main: #0f172a;
+        --saas-text-muted: #64748b;
+    }
+
+    body {
+        background-color: var(--saas-bg);
+        color: var(--saas-text-main);
+    }
+
+    /* Modern Card SaaS Style */
+    .saas-card {
+        background: var(--saas-card-bg);
+        border: 1px solid var(--saas-border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .saas-card:hover {
+        border-color: #cbd5e1;
+    }
+
+    /* Stat Cards */
+    .stat-card {
         background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .card-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(148, 163, 184, 0.08) !important;
-    }
-    .shadow-premium {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
+        border: 1px solid var(--saas-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        position: relative;
+        overflow: hidden;
     }
 
-    /* Form Controls */
-    .form-select, .form-control {
-        font-size: 0.92rem !important;
-        border-radius: 8px !important;
-        border: 1px solid #dee2e6;
-        padding: 9px 12px;
-    }
-    .form-select:focus, .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.08) !important;
-    }
-
-    /* Tabel */
-    .table {
-        font-size: 0.88rem;
-    }
-    .table th {
-        font-weight: 600;
-        font-size: 0.72rem;
-        letter-spacing: 0.4px;
+    .stat-card .stat-label {
+        font-size: 0.725rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #6c757d;
-        padding: 12px 16px !important;
-        background-color: #f8f9fa !important;
-        border-bottom: 1px solid #edeff1 !important;
-    }
-    .table td {
-        padding: 12px 16px !important;
-        border-bottom: 1px solid #f1f3f5 !important;
-    }
-    .table-hover tbody tr:hover {
-        background-color: #f8f9fa !important;
+        color: var(--saas-text-muted);
+        margin-bottom: 0.25rem;
     }
 
-    /* Status badge: teks berwarna dengan titik kecil, tanpa background/border ramai */
-    .status-dot {
-        display: inline-flex;
+    .stat-card .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--saas-text-main);
+        line-height: 1.2;
+    }
+
+    .stat-card .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
         align-items: center;
-        gap: 6px;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    /* Custom Form Controls */
+    .saas-form-control, .saas-form-select {
+        border: 1px solid var(--saas-border);
+        border-radius: 8px;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.875rem;
+        color: var(--saas-text-main);
+        background-color: #ffffff;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .saas-form-control:focus, .saas-form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        outline: none;
+    }
+
+    .input-group-saas {
+        border: 1px solid var(--saas-border);
+        border-radius: 8px;
+        background-color: #ffffff;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .input-group-saas:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    .input-group-saas .input-group-text {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+    }
+
+    .input-group-saas .form-control {
+        border: none;
+        box-shadow: none !important;
+        padding-left: 0;
+    }
+
+    /* Table Design */
+    .table-saas {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-saas th {
+        background: #f8fafc;
+        color: #475569;
         font-weight: 600;
-        font-size: 0.8rem;
-    }
-    .status-dot::before {
-        content: '';
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background-color: currentColor;
-        flex-shrink: 0;
-    }
-    .badge-hadir { color: #2e7d32; }
-    .badge-terlambat { color: #b8860b; }
-    .badge-sakit { color: #1565c0; }
-    .badge-izin { color: #616161; }
-    .badge-alpa { color: #c62828; }
-
-    /* Auto-Cleanup Banner: garis tipis, tanpa ikon besar */
-    .banner-cleanup {
-        background-color: #fff;
-        border-left: 3px solid #f0b429 !important;
-        color: #6c757d;
+        font-size: 0.725rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--saas-border);
     }
 
-    /* Modal sederhana */
+    .table-saas td {
+        padding: 0.9rem 1rem;
+        font-size: 0.875rem;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .table-saas tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    .table-saas tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Modal Clean */
     .modal-clean-content {
-        border: none !important;
-        border-radius: 14px !important;
-        box-shadow: 0 12px 28px rgba(0,0,0,0.1) !important;
+        border: 1px solid var(--saas-border);
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
     }
 </style>
 
-{{-- SINKRONISASI ALERT DENGAN STYLE BARU --}}
+{{-- ALERT SUCCESS --}}
 @if(session('sukses'))
-    <div class="alert alert-success alert-dismissible fade show rounded-4 mb-4 shadow-sm border-0 text-start d-flex align-items-center p-3" role="alert" style="background-color: #dcfce7; color: #15803d;">
-        <i class="bi bi-check-circle-fill me-2 fs-5"></i> 
-        <div class="fw-medium">{{ session('sukses') }}</div>
+    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4 border-0 text-start d-flex align-items-center p-3 shadow-sm" role="alert" style="background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0 !important;">
+        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+        <div class="fw-medium small">{{ session('sukses') }}</div>
         <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
@@ -103,251 +163,143 @@
 {{-- HEADER HALAMAN --}}
 <div class="d-flex justify-content-between align-items-center mb-4 text-start">
     <div>
-        <h3 class="fw-bold m-0" style="letter-spacing: -0.5px;">Log Notifikasi Presensi</h3>
-        <p class="text-muted m-0 mt-1" style="font-size: 0.9rem;">
+        <h3 class="fw-bold m-0 tracking-tight" style="color: var(--saas-text-main); font-size: 1.5rem;">Log Notifikasi Presensi</h3>
+        <p class="text-muted m-0 mt-1 small">
             Pemantauan pengiriman WhatsApp gateway untuk sistem kehadiran siswa secara real-time.
         </p>
     </div>
 </div>
 
-{{-- BANNER AUTO-CLEANUP --}}
-<div class="banner-cleanup rounded-3 mb-4 p-3 small">
-    <strong class="text-dark">Auto-cleanup:</strong>
-    log yang berumur lebih dari 24 jam otomatis dibersihkan sistem untuk efisiensi penyimpanan.
-</div>
-
 {{-- 1. STATISTIK LOG --}}
 <div class="row g-3 mb-4 text-start">
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-premium rounded-4 bg-white p-3 h-100 position-relative overflow-hidden">
-            <div class="card-body p-0 d-flex align-items-center justify-content-between">
+    <div class="col-12 col-md-4">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small d-block mb-1 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.4px;">Total Aktivitas</span>
-                    <h3 class="fw-bold text-dark mb-0 font-monospace fs-2" style="letter-spacing: -0.5px;">{{ $totalLog }}</h3>
+                    <div class="stat-label">Total Aktivitas</div>
+                    <div class="stat-value">{{ $totalLog }}</div>
                 </div>
-                <div class="bg-primary bg-opacity-10 p-2 px-3 rounded-3 text-primary">
-                    <i class="bi bi-clipboard-data fs-4 lh-1"></i>
+                <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
+                    <i class="bi bi-clipboard-data"></i>
                 </div>
             </div>
-            <div class="position-absolute bottom-0 start-0 w-100 bg-primary" style="height: 3px;"></div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-premium rounded-4 bg-white p-3 h-100 position-relative overflow-hidden">
-            <div class="card-body p-0 d-flex align-items-center justify-content-between">
+    <div class="col-12 col-md-4">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-success small d-block mb-1 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.4px;">Notifikasi Sukses</span>
-                    <h3 class="fw-bold text-dark mb-0 font-monospace fs-2" style="letter-spacing: -0.5px;">{{ $totalBerhasil }}</h3>
+                    <div class="stat-label" style="color: #166534;">Notifikasi Sukses</div>
+                    <div class="stat-value">{{ $totalBerhasil }}</div>
                 </div>
-                <div class="bg-success bg-opacity-10 p-2 px-3 rounded-3 text-success">
-                    <i class="bi bi-check-circle-fill fs-4 lh-1"></i>
+                <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
             </div>
-            <div class="position-absolute bottom-0 start-0 w-100 bg-success" style="height: 3px;"></div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-premium rounded-4 bg-white p-3 h-100 position-relative overflow-hidden">
-            <div class="card-body p-0 d-flex align-items-center justify-content-between">
+    <div class="col-12 col-md-4">
+        <div class="stat-card">
+            <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-danger small d-block mb-1 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.4px;">Notifikasi Gagal</span>
-                    <h3 class="fw-bold text-dark mb-0 font-monospace fs-2" style="letter-spacing: -0.5px;">{{ $totalGagal }}</h3>
+                    <div class="stat-label" style="color: #991b1b;">Notifikasi Gagal</div>
+                    <div class="stat-value">{{ $totalGagal }}</div>
                 </div>
-                <div class="bg-danger bg-opacity-10 p-2 px-3 rounded-3 text-danger">
-                    <i class="bi bi-x-circle-fill fs-4 lh-1"></i>
+                <div class="stat-icon" style="background: #fef2f2; color: #dc2626;">
+                    <i class="bi bi-x-circle-fill"></i>
                 </div>
             </div>
-            <div class="position-absolute bottom-0 start-0 w-100 bg-danger" style="height: 3px;"></div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="card border-0 shadow-premium rounded-4 bg-white p-3 h-100 position-relative overflow-hidden">
-            <div class="card-body p-0 d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="text-secondary small d-block mb-1 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.4px;">Log Hari Ini</span>
-                    <h3 class="fw-bold text-dark mb-0 font-monospace fs-2" style="letter-spacing: -0.5px;">{{ $totalHariIni }}</h3>
-                </div>
-                <div class="bg-secondary bg-opacity-10 p-2 px-3 rounded-3 text-secondary">
-                    <i class="bi bi-calendar-check-fill fs-4 lh-1"></i>
-                </div>
-            </div>
-            <div class="position-absolute bottom-0 start-0 w-100 bg-secondary opacity-50" style="height: 3px;"></div>
         </div>
     </div>
 </div>
 
-{{-- 3. UTILITY FILTER DATA --}}
-<div class="card-custom mb-4 text-start bg-white p-0">
-    <div class="card-body p-3">
-        <form method="GET" action="{{ route('log.notifikasi') }}">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold text-dark small">Pencarian</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search small text-muted"></i></span>
-                        <input type="text" name="search" value="{{ request('search') }}" class="form-control shadow-none border-start-0 ps-0" placeholder="Nama siswa, kode RFID, atau nomor WA orang tua...">
-                    </div>
-                </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label fw-semibold text-dark small">Status Kirim</label>
-                    <select name="status_kirim" class="form-select shadow-none">
-                        <option value="" {{ request('status_kirim') == '' ? 'selected' : '' }}>Semua</option>
-                        <option value="Berhasil" {{ request('status_kirim') == 'Berhasil' ? 'selected' : '' }}>Berhasil</option>
-                        <option value="Gagal" {{ request('status_kirim') == 'Gagal' ? 'selected' : '' }}>Gagal</option>
-                    </select>
-                </div>
 
-                <div class="col-6 col-md-2">
-                    <label class="form-label fw-semibold text-dark small">Status Absen</label>
-                    <select name="status_presensi" class="form-select shadow-none">
-                        <option value="" {{ request('status_presensi') == '' ? 'selected' : '' }}>Semua</option>
-                        <option value="Hadir" {{ request('status_presensi') == 'Hadir' ? 'selected' : '' }}>Hadir</option>
-                        <option value="Terlambat" {{ request('status_presensi') == 'Terlambat' ? 'selected' : '' }}>Terlambat</option>
-                        <option value="Sakit" {{ request('status_presensi') == 'Sakit' ? 'selected' : '' }}>Sakit</option>
-                        <option value="Izin" {{ request('status_presensi') == 'Izin' ? 'selected' : '' }}>Izin</option>
-                        <option value="Alpa" {{ request('status_presensi') == 'Alpa' ? 'selected' : '' }}>Alpa</option>
-                    </select>
-                </div>
-
-                <div class="col-6 col-md-2">
-                    <label class="form-label fw-semibold text-dark small">Tanggal</label>
-                    <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="form-control shadow-none">
-                </div>
-
-                <div class="col-6 col-md-1">
-                    <button type="submit" class="btn btn-primary w-100" title="Terapkan filter">
-                        <i class="bi bi-filter"></i>
-                    </button>
-                </div>
-            </div>
-
-            @if(request('search') || request('status_kirim') || request('status_presensi') || request('tanggal'))
-                <div class="mt-3">
-                    <a href="{{ route('log.notifikasi') }}" class="btn btn-light border btn-sm">Reset Filter</a>
-                    <span class="text-muted small ms-2">Menampilkan {{ $logs->total() }} hasil sesuai filter.</span>
-                </div>
-            @endif
-        </form>
-    </div>
-</div>
-
-{{-- 2. RIWAYAT TABEL --}}
-<div class="card-custom overflow-hidden text-start bg-white p-0">
-    <div class="card-header bg-white border-bottom py-3 px-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">Riwayat Transaksi Notifikasi WhatsApp</h5>
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-muted small">{{ $logs->total() }} record</span>
-                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalDeleteAll">
-                    Hapus Semua Log
-                </button>
-            </div>
+{{-- 3. RIWAYAT TABEL --}}
+<div class="saas-card overflow-hidden text-start">
+    <div class="px-4 py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: #ffffff;">
+        <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Riwayat Transaksi Notifikasi WhatsApp</h6>
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.775rem;">{{ $logs->total() }} records</span>
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-2 fw-medium" style="font-size: 0.8rem;" data-bs-toggle="modal" data-bs-target="#modalDeleteAll">
+                Hapus Semua Log
+            </button>
         </div>
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover align-middle m-0">
+        <table class="table-saas">
             <thead>
                 <tr>
                     <th style="width: 5%" class="text-center">No</th>
-                    <th style="width: 14%">Waktu Sistem</th>
-                    <th style="width: 12%">RFID Code</th>
-                    <th style="width: 18%">Nama Siswa</th>
-                    <th style="width: 13%">No. WA Orang Tua</th>
-                    <th style="width: 10%">Status Absen</th>
-                    <th style="width: 10%">Status Kirim</th>
-                    <th style="width: 13%">Keterangan API</th>
-                    <th style="width: 5%" class="text-center">Aksi</th>
+                    <th style="width: 18%">Waktu Sistem</th>
+                    <th style="width: 15%">RFID Code</th>
+                    <th style="width: 25%">Nama Siswa</th>
+                    <th style="width: 17%">No. WA Orang Tua</th>
+                    <th style="width: 12%">Status Kirim</th>
+                    <th style="width: 8%" class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
             @forelse ($logs as $index => $log)
             <tr>
-                <td class="text-center text-muted fw-medium">{{ $logs->firstItem() + $index }}</td>
+                <td class="text-center text-muted fw-medium small">{{ $logs->firstItem() + $index }}</td>
                 
                 {{-- Waktu Sistem --}}
-                <td class="font-monospace small text-muted">{{ $log->created_at->format('d-m-Y H:i') }} WIB</td>
+                <td class="font-monospace small text-muted">{{ $log->created_at->format('d-m-Y H:i') }}</td>
                 
                 {{-- RFID Code --}}
-                <td class="font-monospace small text-muted">
+                <td class="font-monospace small text-secondary">
                     @if(str_contains($log->rfid_code, 'MANUAL_'))
-                        Manual
+                        <span class="text-muted italic">Manual</span>
                     @else
                         {{ $log->rfid_code }}
                     @endif
                 </td>
                 
                 {{-- Nama Siswa --}}
-                <td class="fw-bold text-dark text-uppercase" style="font-size: 0.82rem; letter-spacing: 0.2px;">{{ $log->nama_siswa }}</td>
+                <td class="fw-semibold text-dark">{{ $log->nama_siswa }}</td>
                 
                 {{-- No HP --}}
                 <td class="font-monospace text-secondary small">{{ $log->no_hp_orang_tua }}</td>
-                
-                {{-- Status Presensi Badge Warna Dinamis --}}
-                <td>
-                    @php
-                        $badgeClass = match($log->status_presensi) {
-                            'Hadir' => 'badge-hadir',
-                            'Terlambat' => 'badge-terlambat',
-                            'Sakit' => 'badge-sakit',
-                            'Izin' => 'badge-izin',
-                            'Alpa' => 'badge-alpa',
-                            default => 'bg-light text-dark'
-                        };
-                    @endphp
-                    <span class="status-dot {{ $badgeClass }}">{{ $log->status_presensi }}</span>
-                </td>
 
                 {{-- Status Notifikasi Gateway --}}
                 <td>
                     @if($log->status_notifikasi == 'Berhasil')
-                        <span class="small fw-semibold text-success">Terkirim</span>
+                        <span class="fw-semibold text-success small d-flex align-items-center gap-1">
+                            <i class="bi bi-check2"></i> Terkirim
+                        </span>
                     @else
-                        <span class="small fw-semibold text-danger">Gagal</span>
+                        <span class="fw-semibold text-danger small d-flex align-items-center gap-1">
+                            <i class="bi bi-x-lg"></i> Gagal
+                        </span>
                     @endif
-                </td>
-
-                {{-- Keterangan API --}}
-                <td class="text-wrap text-muted font-monospace" style="max-width: 160px; font-size: 0.75rem; line-height: 1.4;">
-                    {{ Str::limit($log->keterangan, 60, '...') }}
                 </td>
 
                 {{-- Tombol Aksi Hapus Log Manual --}}
                 <td class="text-center">
-                    <button type="button" class="btn btn-link p-0 text-danger" title="Hapus Permanen" data-bs-toggle="modal" data-bs-target="#modalDelete{{ $log->id }}">
-                        <i class="bi bi-trash"></i>
+                    <button type="button"
+                            class="btn btn-sm btn-link text-danger p-0 border-0 btn-delete-log"
+                            title="Hapus Permanen"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalDeleteLog"
+                            data-delete-url="{{ route('log.notifikasi.destroy', $log->id) }}"
+                            data-nama="{{ $log->nama_siswa }}">
+                        <i class="bi bi-trash3 fs-6"></i>
                     </button>
-
-                    <!-- MODAL DELETE INDIVIDUAL -->
-                    <div class="modal fade" id="modalDelete{{ $log->id }}" mercantile-modal tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 380px;">
-                            <div class="modal-content modal-clean-content p-4 text-center">
-                                <h5 class="fw-bold text-dark mb-2">Hapus Baris Riwayat?</h5>
-                                <p class="text-muted small mb-4">Tindakan ini permanen. Data log untuk siswa <strong class="text-dark">{{ $log->nama_siswa }}</strong> akan dihapus dari sistem.</p>
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button type="button" class="btn btn-light border w-50 " data-bs-dismiss="modal">Batal</button>
-                                    <form action="{{ route('log.notifikasi.destroy', $log->id) }}" method="POST" class="w-50">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger w-100 ">Ya, Hapus</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="text-center text-muted py-5">
-                    <div class="py-4">
-                        @if(request('search') || request('status_kirim') || request('status_presensi') || request('tanggal'))
-                            <h6 class="fw-bold text-dark">Tidak Ada Hasil yang Cocok</h6>
-                            <p class="text-muted mb-0 small" style="max-width: 320px; margin: 0 auto;">Tidak ditemukan log yang sesuai dengan kata kunci/filter yang dipilih. Coba ubah kata kunci atau reset filter.</p>
+                <td colspan="7" class="text-center text-muted py-5">
+                    <div class="py-3">
+                        <i class="bi bi-inbox text-slate-300 fs-1 d-block mb-2"></i>
+                        @if(request('search') || request('status_kirim') || request('tanggal'))
+                            <h6 class="fw-bold text-dark mb-1">Tidak Ada Hasil yang Cocok</h6>
+                            <p class="text-muted mb-0 small" style="max-width: 360px; margin: 0 auto;">Coba ubah filter pencarian atau tanggal untuk menemukan data riwayat.</p>
                         @else
-                            <h6 class="fw-bold text-dark">Belum Ada Riwayat Notifikasi</h6>
-                            <p class="text-muted mb-0 small" style="max-width: 320px; margin: 0 auto;">Seluruh log pengiriman pesan otomatis ke nomor WhatsApp orang tua siswa akan terekam di sini.</p>
+                            <h6 class="fw-bold text-dark mb-1">Belum Ada Riwayat Notifikasi</h6>
+                            <p class="text-muted mb-0 small" style="max-width: 360px; margin: 0 auto;">Seluruh log pengiriman pesan otomatis ke nomor WhatsApp orang tua siswa akan terekam di sini.</p>
                         @endif
                     </div>
                 </td>
@@ -359,27 +311,77 @@
 
     {{-- LINK PAGINATION --}}
     @if($logs->hasPages())
-        <div class="card-footer bg-white p-3 border-top d-flex justify-content-center">
+        <div class="px-4 py-3 bg-white border-top d-flex justify-content-center">
             {{ $logs->links('pagination::bootstrap-5') }}
         </div>
     @endif
 </div>
 
-<!-- MODAL DELETE ALL LOGS (SaaS Style) -->
+<!-- MODAL DELETE INDIVIDUAL -->
+<div class="modal fade" id="modalDeleteLog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 380px;">
+        <div class="modal-content modal-clean-content p-4 text-center">
+            <h5 class="fw-bold text-dark mb-2">Hapus Baris Riwayat?</h5>
+            <p class="text-muted small mb-4">
+                Tindakan ini permanen. Data log untuk siswa 
+                <strong class="text-dark" id="deleteLogNama"></strong> 
+                akan dihapus dari sistem.
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-light border w-50 rounded-2 fw-medium" data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <form id="deleteLogForm" method="POST" class="w-50">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger w-100 rounded-2 fw-medium">
+                        Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DELETE ALL LOGS -->
 <div class="modal fade" id="modalDeleteAll" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm" style="max-width: 400px;">
         <div class="modal-content modal-clean-content p-4 text-center">
             <h5 class="fw-bold text-dark mb-2">Kosongkan Semua Log?</h5>
             <p class="text-muted small mb-4">Apakah Anda yakin ingin menghapus <strong>seluruh data riwayat</strong> transaksi notifikasi WhatsApp? Tindakan ini tidak dapat dibatalkan.</p>
             <div class="d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-light border w-50 " data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-light border w-50 rounded-2 fw-medium" data-bs-dismiss="modal">Batal</button>
                 <form action="{{ route('log.notifikasi.truncate') }}" method="POST" class="w-50">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger w-100 ">Ya, Bersihkan</button>
+                    <button type="submit" class="btn btn-danger w-100 rounded-2 fw-medium">Ya, Bersihkan</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    flatpickr("#filter_tanggal", {
+        altInput: true,
+        altFormat: "d-m-Y",
+        dateFormat: "Y-m-d"
+    });
+
+    const modalDeleteLog = document.getElementById('modalDeleteLog');
+    if (modalDeleteLog) {
+        modalDeleteLog.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const deleteUrl = button.getAttribute('data-delete-url');
+            const namaSiswa = button.getAttribute('data-nama');
+
+            document.getElementById('deleteLogForm').action = deleteUrl;
+            document.getElementById('deleteLogNama').textContent = namaSiswa;
+        });
+    }
+});
+</script>
+@endpush
 @endsection

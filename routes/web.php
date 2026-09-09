@@ -46,6 +46,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporan/export', [PresensiController::class, 'exportLaporan'])
         ->name('laporan.export');
 
+    // Laporan Rekap Ketidakhadiran (Sakit/Izin/Alpa)
+    Route::get('/laporan/ketidakhadiran', [PresensiController::class, 'laporanKetidakhadiran'])
+        ->name('laporan.ketidakhadiran');
+
+    Route::get('/laporan/ketidakhadiran/export', [PresensiController::class, 'exportKetidakhadiran'])
+        ->name('laporan.ketidakhadiran.export');
+
     // Form Input & Update Presensi Manual Berbasis Kelas
     Route::get('/presensi/manual', [PresensiController::class, 'inputManual'])
         ->name('presensi.manual');
