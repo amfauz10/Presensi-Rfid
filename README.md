@@ -17,7 +17,7 @@ Hardware: RFID reader (plug and play)
 Notifikasi: WhatsApp Gateway API
 Cara Menjalankan
 bash
-git clone https://github.com/username-kamu/presensi-rfid.git
+git clone https://github.com/amfauz10/Presensi-Rfid.git
 cd presensi-rfid
 composer install
 cp .env.example .env
