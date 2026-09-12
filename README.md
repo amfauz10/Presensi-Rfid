@@ -39,3 +39,12 @@ php artisan serve
 ## Catatan
 
 Dikerjakan secara mandiri sebagai latihan integrasi antara aplikasi web, perangkat RFID, dan layanan pihak ketiga (WhatsApp Gateway).
+
+## Tangkapan Layar
+
+![Halaman login](Login.png)
+![Tap kartu RFID](TapRFID.png)
+![Notifikasi WhatsApp](Notifikasi.png)
+![Rekap laporan](Rekap-Laporan.png)
+![Dashboard admin](Dashboard-Admin.png)
+![Dashboard wali kelas](Dashboard-Wali-Kelas.png)
